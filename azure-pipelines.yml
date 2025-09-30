@@ -103,7 +103,7 @@ stages:
                 - task: AzureWebApp@1
                   displayName: "Deploy Backend QA"
                   inputs:
-                    azureSubscription: "azure-connection-tp05"
+                    azureSubscription: "azure-connection-tp06"
                     appName: "tp05-backend-qa"
                     package: "$(Pipeline.Workspace)/drop-back.zip"
 
@@ -177,7 +177,7 @@ stages:
                 - task: AzureWebApp@1
                   displayName: "Deploy Backend PROD"
                   inputs:
-                    azureSubscription: "azure-connection-tp05"
+                    azureSubscription: "azure-connection-tp06"
                     appName: "tp05-backend-prod"
                     package: "$(Pipeline.Workspace)/drop-back.zip"
                 
