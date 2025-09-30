@@ -1,0 +1,197 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+- group: StaticWebAppTokens
+
+pool:
+  name: Pauli   
+
+stages:
+  - stage: Build
+    displayName: "Build and Test"
+    jobs:
+      - job: Frontend
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '22.x'
+
+          - script: |
+              cd frontend
+              echo "📂 Archivos JSON en frontend:"
+              dir *.json
+            displayName: "Debug - Listar JSON (Windows)"
+            condition: always()
+
+          - script: |
+              cd frontend
+              echo "🚀 Ejecutando build de React..."
+              npm ci
+              npm run build || exit 1
+
+              echo "📂 Contenido de frontend tras build:"
+              dir
+
+              echo "📂 Buscando recursivamente la carpeta build:"
+              dir /s build
+            displayName: "Build React App (con debug extendido)"
+
+          - script: |
+              cd frontend
+              npm ci
+              npm test
+            displayName: "Run Frontend Unit Tests"
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: $(Build.SourcesDirectory)/frontend/build
+              artifact: drop-front
+
+      - job: Backend
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '22.x'
+
+          - script: |
+              cd backend
+              npm ci
+              npm test
+            displayName: "Build & Test Backend"
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: $(Build.SourcesDirectory)/backend
+              artifact: drop-back
+
+          #- script: |
+           #   echo "📂 Contenido de drop-back:"
+            #  dir "$(Pipeline.Workspace)/drop-back"
+            #displayName: "Debug - Listar drop-back"
+            #condition: always()
+
+  # -------------------------------
+  # Deploy QA
+  # -------------------------------
+  - stage: Deploy_QA
+    displayName: "Deploy to QA"
+    dependsOn: Build
+    jobs:
+      - deployment: DeployQA
+        displayName: "Desplegar QA"
+        environment: "QA"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop-front
+                - download: current
+                  artifact: drop-back
+
+                - task: ArchiveFiles@2
+                  displayName: "Empaquetar Backend (QA)"
+                  inputs:
+                    rootFolderOrFile: '$(Pipeline.Workspace)/drop-back'
+                    includeRootFolder: false
+                    archiveFile: '$(Pipeline.Workspace)/drop-back.zip'
+                    replaceExistingArchive: true
+
+                - task: AzureWebApp@1
+                  displayName: "Deploy Backend QA"
+                  inputs:
+                    azureSubscription: "azure-connection-tp05"
+                    appName: "tp05-backend-qa"
+                    package: "$(Pipeline.Workspace)/drop-back.zip"
+
+                #- script: |
+                    #cd "$(Pipeline.Workspace)/drop-front"
+                    #echo "📂 Contenido de drop-front:"
+                    #dir
+                  #displayName: "Debug - Revisar contenido del frontend"
+
+                - script: |
+                    echo "REACT_APP_API_URL=https://tp05-backend-qa-chdtg5exgzarc7hd.brazilsouth-01.azurewebsites.net" > .env
+                  displayName: "Configurar API URL para QA"
+                
+                #- script: set
+                 # displayName: "Debug - Listar variables de entorno"
+
+                #- script: |
+                   # echo 🔎 Verificando tokens disponibles...
+                   # echo "SWA_TOKEN_QA = $(SWA_TOKEN_QA)"
+                    #echo "SWA_TOKEN_PROD = $(SWA_TOKEN_PROD)"
+                  #displayName: "Check SWA tokens"
+
+                # Frontend QA
+                - script: |
+                    cd "$(Pipeline.Workspace)/drop-front"
+                    npm install -g @azure/static-web-apps-cli
+                    npx swa deploy ./ --app-location . --deployment-token $(SWA_TOKEN_QA)
+                  displayName: "Deploy Frontend QA"
+
+                #- script: |
+                   # echo "📂 Archivos que quedaron en drop-front:"
+                   # dir "$(Pipeline.Workspace)/drop-front"
+
+                    #echo "🔎 Probando acceso a index.html:"
+                    #if exist "$(Pipeline.Workspace)/drop-front\index.html" (
+                     # echo "✅ index.html encontrado"
+                   # ) else (
+                   #   echo "❌ index.html NO encontrado"
+                  #  )
+                  #displayName: "Debug - Verificar contenido desplegado QA"
+                  #condition: always()
+
+# -------------------------------
+# Deploy PROD
+# -------------------------------
+  - stage: Deploy_PROD
+    displayName: "Deploy to Production"
+    dependsOn: Deploy_QA
+    jobs:
+      - deployment: DeployPROD
+        displayName: "Desplegar PROD"
+        environment: "PROD"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - download: current
+                  artifact: drop-front
+                - download: current
+                  artifact: drop-back
+
+                - task: ArchiveFiles@2
+                  displayName: "Empaquetar Backend (PROD)"
+                  inputs:
+                    rootFolderOrFile: '$(Pipeline.Workspace)/drop-back'
+                    includeRootFolder: false
+                    archiveFile: '$(Pipeline.Workspace)/drop-back.zip'
+                    replaceExistingArchive: true
+
+                # Backend PROD
+                - task: AzureWebApp@1
+                  displayName: "Deploy Backend PROD"
+                  inputs:
+                    azureSubscription: "azure-connection-tp05"
+                    appName: "tp05-backend-prod"
+                    package: "$(Pipeline.Workspace)/drop-back.zip"
+                
+                - script: |
+                    echo "REACT_APP_API_URL=https://tp05-backend-prod-cudvdwd9c0exdbhc.brazilsouth-01.azurewebsites.net" > .env
+                  displayName: "Configurar API URL para PROD"
+
+                # Frontend PROD
+                - script: |
+                    cd "$(Pipeline.Workspace)/drop-front"
+                    npm install -g @azure/static-web-apps-cli
+                    npx swa deploy ./ --app-location . --deployment-token $(SWA_TOKEN_PROD) --env prod
+                  displayName: "Deploy Frontend PROD"
+
+
+
+
