@@ -42,7 +42,7 @@ stages:
           - script: |
               cd frontend
               npm ci
-              npm test
+              npx jest --detectOpenHandles --forceExit --verbose
             displayName: "Run Frontend Unit Tests"
 
           - task: PublishPipelineArtifact@1
