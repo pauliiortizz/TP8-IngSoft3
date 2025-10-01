@@ -58,7 +58,7 @@ stages:
 
           - script: |
               cd backend
-              npm ci --only=production
+              npm ci 
             displayName: "Instalar dependencias de producción Backend"
 
           - script: |
