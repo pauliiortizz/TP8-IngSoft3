@@ -58,20 +58,18 @@ stages:
 
           - script: |
               cd backend
-              npm ci
+              npm ci --only=production
+            displayName: "Instalar dependencias de producción Backend"
+
+          - script: |
+              cd backend
               npm test
-            displayName: "Build & Test Backend"
+            displayName: "Run Backend Tests"
 
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: $(Build.SourcesDirectory)/backend
               artifact: drop-back
-
-          #- script: |
-           #   echo "📂 Contenido de drop-back:"
-            #  dir "$(Pipeline.Workspace)/drop-back"
-            #displayName: "Debug - Listar drop-back"
-            #condition: always()
 
   # -------------------------------
   # Deploy QA
