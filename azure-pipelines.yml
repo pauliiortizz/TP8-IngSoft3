@@ -42,7 +42,7 @@ stages:
           - script: |
               cd frontend
               npm ci
-              npm test
+              npx jest --detectOpenHandles --forceExit --verbose
             displayName: "Run Frontend Unit Tests"
 
           - task: PublishPipelineArtifact@1
@@ -58,20 +58,18 @@ stages:
 
           - script: |
               cd backend
-              npm ci
+              npm ci 
+            displayName: "Instalar dependencias de producción Backend"
+
+          - script: |
+              cd backend
               npm test
-            displayName: "Build & Test Backend"
+            displayName: "Run Backend Tests"
 
           - task: PublishPipelineArtifact@1
             inputs:
               targetPath: $(Build.SourcesDirectory)/backend
               artifact: drop-back
-
-          #- script: |
-           #   echo "📂 Contenido de drop-back:"
-            #  dir "$(Pipeline.Workspace)/drop-back"
-            #displayName: "Debug - Listar drop-back"
-            #condition: always()
 
   # -------------------------------
   # Deploy QA
@@ -113,7 +111,7 @@ stages:
                 - task: AzureWebApp@1
                   displayName: "Deploy Backend QA"
                   inputs:
-                    azureSubscription: "azure-connection-tp05"
+                    azureSubscription: "azure-connection-tp06"
                     appName: "tp05-backend-qa"
                     package: "$(Pipeline.Workspace)/drop-back.zip"
 
@@ -207,7 +205,7 @@ stages:
                 - task: AzureWebApp@1
                   displayName: "Deploy Backend PROD"
                   inputs:
-                    azureSubscription: "azure-connection-tp05"
+                    azureSubscription: "azure-connection-tp06"
                     appName: "tp05-backend-prod"
                     package: "$(Pipeline.Workspace)/drop-back.zip"
                 
