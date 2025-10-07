@@ -3,8 +3,15 @@ trigger:
     include:
       - main
 
+parameters:
+  - name: runDbMigrations
+    type: boolean
+    default: false
+
 variables:
 - group: StaticWebAppTokens
+- name: RUN_DB_MIGRATIONS
+  value: ${{ parameters.runDbMigrations }}
 
 pool:
   name: Pauli   
@@ -116,7 +123,7 @@ stages:
                     package: "$(Pipeline.Workspace)/drop-back.zip"
 
                 # Opcional: ejecutar migraciones (aplicar índice UNIQUE). Controlado por variable RUN_DB_MIGRATIONS
-                - script: |
+                - bash: |
                     echo "RUN_DB_MIGRATIONS=$(RUN_DB_MIGRATIONS)"
                     if [ "$(RUN_DB_MIGRATIONS)" = "true" ]; then
                       echo "Running DB migration: add unique index on users.name"
@@ -126,7 +133,6 @@ stages:
                       echo "Skipping DB migrations (RUN_DB_MIGRATIONS != true)"
                     fi
                   displayName: "(Opt) Run DB migrations"
-                  shell: bash
 
                 #- script: |
                     #cd "$(Pipeline.Workspace)/drop-front"
