@@ -8,6 +8,10 @@ app.use(express.json());
 // ENDPOINTS
 // ------------------
 
+const cors = require('cors');
+app.use(cors());
+
+
 // Healthcheck
 app.get('/ping', (req, res) => {
   res.json({ message: 'pong' });
@@ -23,15 +27,34 @@ app.get('/users', async (req, res) => {
   }
 });
 
-// POST /users
 app.post('/users', async (req, res) => {
   try {
+    // Validación: evitar crear dos usuarios con el mismo nombre
+    if (!req.body || !req.body.name) {
+      return res.status(400).json({ error: 'El campo name es requerido' });
+    }
+
+    const existing = await User.findOne({ where: { name: req.body.name } });
+    if (existing) {
+      return res.status(409).json({ error: 'El nombre de usuario ya existe' });
+    }
+
     const user = await User.create(req.body);
     res.status(201).json(user);
   } catch (err) {
+    console.error('❌ Error al crear usuario:', err.message);
+    if (err.errors) {
+      console.error('Detalles:', err.errors.map(e => e.message));
+    }
+    // Manejar errores de constraint de unicidad por si la BD no tiene índice
+    if (err.name === 'SequelizeUniqueConstraintError' || (err.errors && err.errors.some(e => e.message && e.message.toLowerCase().includes('unique')))) {
+      return res.status(409).json({ error: 'El nombre de usuario ya existe' });
+    }
+
     res.status(400).json({ error: err.message });
   }
 });
+
 
 // PUT /users/:id
 app.put('/users/:id', async (req, res) => {

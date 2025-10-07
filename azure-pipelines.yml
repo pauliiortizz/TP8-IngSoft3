@@ -92,6 +92,16 @@ stages:
                 - download: current
                   artifact: drop-back
 
+                - script: |
+                    echo "Preparing backend for deploy (installing production deps)..."
+                    cd "$(Pipeline.Workspace)/drop-back"
+                    if exist package.json (
+                      npm ci --only=production
+                    ) else (
+                      echo "No package.json found in drop-back"
+                    )
+                  displayName: "Prepare backend (npm ci)"
+
                 - task: ArchiveFiles@2
                   displayName: "Empaquetar Backend (QA)"
                   inputs:
@@ -106,6 +116,19 @@ stages:
                     azureSubscription: "azure-connection-tp05"
                     appName: "tp05-backend-qa"
                     package: "$(Pipeline.Workspace)/drop-back.zip"
+
+                # Opcional: ejecutar migraciones (aplicar índice UNIQUE). Controlado por variable RUN_DB_MIGRATIONS
+                - script: |
+                    echo "RUN_DB_MIGRATIONS=$(RUN_DB_MIGRATIONS)"
+                    if [ "$(RUN_DB_MIGRATIONS)" = "true" ]; then
+                      echo "Running DB migration: add unique index on users.name"
+                      cd "$(Pipeline.Workspace)/drop-back"
+                      npm run migrate:add-unique-name
+                    else
+                      echo "Skipping DB migrations (RUN_DB_MIGRATIONS != true)"
+                    fi
+                  displayName: "(Opt) Run DB migrations"
+                  shell: bash
 
                 #- script: |
                     #cd "$(Pipeline.Workspace)/drop-front"
@@ -132,6 +155,13 @@ stages:
                     npm install -g @azure/static-web-apps-cli
                     npx swa deploy ./ --app-location . --deployment-token $(SWA_TOKEN_QA)
                   displayName: "Deploy Frontend QA"
+
+                - task: PowerShell@2
+                  displayName: "Run smoke tests against QA"
+                  inputs:
+                    targetType: 'filePath'
+                    filePath: '$(Build.SourcesDirectory)\\smoke_qa.ps1'
+                    arguments: ''
 
                 #- script: |
                    # echo "📂 Archivos que quedaron en drop-front:"
