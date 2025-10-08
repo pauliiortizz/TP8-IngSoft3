@@ -1,108 +1,90 @@
-// src/components/UserList.js
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import userService from '../services/userService';
 
 export default function UserList() {
   const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState({ name: '', email: '' });
-  const [editingUser, setEditingUser] = useState(null);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadUsers();
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await userService.getAllUsers();
+        if (!mounted) return;
+        setUsers(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Error loading users', err);
+        if (mounted) setUsers([]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const loadUsers = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name || name.trim() === '') {
+      setError('El nombre es requerido');
+      return;
+    }
+    if (!email || email.trim() === '') {
+      setError('El email es requerido');
+      return;
+    }
     try {
-      const data = await userService.getAllUsers();
-      setUsers(data);
-    } catch {
-      setUsers([]);
+      const payload = { name: name.trim(), email: email.trim() };
+      const created = await userService.createUser(payload);
+      // optimistic add
+      setUsers((prev) => [...prev, created]);
+      setName('');
+      setEmail('');
+      setError(null);
+    } catch (err) {
+      // Improve logging so we can see HTTP status / body from axios
+      if (err && err.response) {
+        console.error('Error creating user', err.response.status, err.response.data);
+        setError(`Error ${err.response.status}: ${JSON.stringify(err.response.data)}`);
+      } else {
+        console.error('Error creating user', err && err.message ? err.message : err);
+        setError(err && err.message ? err.message : String(err));
+      }
     }
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    if (!newUser.name || !newUser.email) return;
-    await userService.createUser(newUser);
-    setNewUser({ name: '', email: '' });
-    loadUsers();
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Seguro que querés eliminar este usuario?')) return;
-    await userService.deleteUser(id);
-    loadUsers();
-  };
-
-  const handleEdit = (user) => {
-    setEditingUser(user);
-  };
-
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    await userService.updateUser(editingUser.id, editingUser);
-    setEditingUser(null);
-    loadUsers();
-  };
-
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Segoe UI' }}>
-      <h1>👥 Gestión de Usuarios</h1>
+    <div>
+      <h2>Usuarios</h2>
 
-      {/* Crear */}
-      <form onSubmit={handleCreate} style={{ marginBottom: '1rem' }}>
+      <form onSubmit={handleSubmit}>
         <input
-          type="text"
           placeholder="Nombre"
-          value={newUser.name}
-          onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <input
-          type="email"
-          placeholder="Correo"
-          value={newUser.email}
-          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-          required
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ marginLeft: 8 }}
         />
         <button type="submit">Agregar</button>
       </form>
 
-      {/* Lista */}
       <ul>
-        {(users || []).length === 0 ? (
-          <p>No hay usuarios</p>
+        {users.length === 0 ? (
+          <li>No hay usuarios</li>
         ) : (
-          (users || []).map((u) => (
-            <li key={u.id}>
-              {editingUser?.id === u.id ? (
-                <form onSubmit={handleUpdate}>
-                  <input
-                    value={editingUser.name}
-                    onChange={(e) =>
-                      setEditingUser({ ...editingUser, name: e.target.value })
-                    }
-                  />
-                  <input
-                    value={editingUser.email}
-                    onChange={(e) =>
-                      setEditingUser({ ...editingUser, email: e.target.value })
-                    }
-                  />
-                  <button type="submit">Guardar</button>
-                  <button onClick={() => setEditingUser(null)}>Cancelar</button>
-                </form>
-              ) : (
-                <>
-                  {u.name} - {u.email}
-                  <button onClick={() => handleEdit(u)}>✏️</button>
-                  <button onClick={() => handleDelete(u.id)}>🗑️</button>
-                </>
-              )}
-            </li>
+          users.map((u) => (
+            <li key={u.id}>{u.name} {u.email ? `- ${u.email}` : ''}</li>
           ))
         )}
       </ul>
+      {error && (
+        <div style={{ color: 'crimson', marginTop: 12 }} role="alert">{error}</div>
+      )}
     </div>
   );
 }

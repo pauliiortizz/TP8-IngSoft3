@@ -76,8 +76,19 @@ app.listen(port, () => {
 
 */
 const app = require("./app");
+const sequelize = require("./db");
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
-  console.log(`🚀 Servidor backend escuchando en el puerto ${port}`);
-});
+
+(async () => {
+  try {
+    // Ensure models/tables are created for local development (SQLite fallback)
+    await sequelize.sync();
+    app.listen(port, () => {
+      console.log(`🚀 Servidor backend escuchando en el puerto ${port}`);
+    });
+  } catch (err) {
+    console.error('❌ Error al sincronizar la base de datos:', err.message);
+    process.exit(1);
+  }
+})();

@@ -1,27 +1,34 @@
 import axios from 'axios';
 
-// Preferimos la configuración runtime expuesta en window.__RUNTIME_CONFIG__
-// (se carga desde /config.json en `index.js`). Si no existe, usamos la
-// variable de entorno REACT_APP_API_URL y finalmente cadena vacía.
-const API_URL = (typeof window !== 'undefined' && window.__RUNTIME_CONFIG__ && window.__RUNTIME_CONFIG__.API_URL)
-  || process.env.REACT_APP_API_URL
-  || '';
+// Read API URL at call time so runtime config (loaded asynchronously from
+// /config.json in index.js) is respected even if it arrives after module eval.
+function getApiUrl() {
+  if (typeof window !== 'undefined' && window.__RUNTIME_CONFIG__ && window.__RUNTIME_CONFIG__.API_URL) {
+    return window.__RUNTIME_CONFIG__.API_URL;
+  }
+  if (process.env && process.env.REACT_APP_API_URL) return process.env.REACT_APP_API_URL;
+  return '';
+}
 
 const userService = {
   getAllUsers: async () => {
-    const res = await axios.get(`${API_URL}/users`);
+    const base = getApiUrl();
+    const res = await axios.get(`${base}/users`);
     return res.data;
   },
   createUser: async (user) => {
-    const res = await axios.post(`${API_URL}/users`, user);
+    const base = getApiUrl();
+    const res = await axios.post(`${base}/users`, user);
     return res.data;
   },
   updateUser: async (id, user) => {
-    const res = await axios.put(`${API_URL}/users/${id}`, user);
+    const base = getApiUrl();
+    const res = await axios.put(`${base}/users/${id}`, user);
     return res.data;
   },
   deleteUser: async (id) => {
-    await axios.delete(`${API_URL}/users/${id}`);
+    const base = getApiUrl();
+    await axios.delete(`${base}/users/${id}`);
   },
 };
 
