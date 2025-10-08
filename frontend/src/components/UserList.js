@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import userService from '../services/userService';
+import { containsBadWord } from '../utils/badwords';
 
 export default function UserList() {
   const [users, setUsers] = useState([]);
@@ -32,6 +33,16 @@ export default function UserList() {
     }
     if (!email || email.trim() === '') {
       setError('El email es requerido');
+      return;
+    }
+    // client-side validation: no bad words
+    if (containsBadWord(name)) {
+      setError('El nombre contiene palabras inapropiadas');
+      return;
+    }
+    // client-side validation: duplicate name
+    if (users.some(u => u.name && u.name.toLowerCase() === name.trim().toLowerCase())) {
+      setError('El nombre de usuario ya existe (validación cliente)');
       return;
     }
     try {

@@ -49,9 +49,9 @@ stages:
 
           - script: |
               cd frontend
-              npm ci
-              set JEST_JUNIT_OUTPUT=./test-results/frontend-junit.xml
-              mkdir test-results || exit 0
+              # set env var for jest-junit (PowerShell)
+              $env:JEST_JUNIT_OUTPUT = './test-results/frontend-junit.xml'
+              if (!(Test-Path 'test-results')) { New-Item -ItemType Directory -Path 'test-results' | Out-Null }
               npm run test:ci
             displayName: "Run Frontend Unit Tests (CI reporter)"
 
@@ -73,9 +73,9 @@ stages:
 
           - script: |
               cd backend
-              npm ci
-              set JEST_JUNIT_OUTPUT=./test-results/backend-junit.xml
-              mkdir test-results || exit 0
+              # set env var for jest-junit (PowerShell)
+              $env:JEST_JUNIT_OUTPUT = './test-results/backend-junit.xml'
+              if (!(Test-Path 'test-results')) { New-Item -ItemType Directory -Path 'test-results' | Out-Null }
               npm run test:ci
             displayName: "Run Backend Tests (CI reporter)"
 
@@ -112,13 +112,13 @@ stages:
                   artifact: drop-back
 
                 - script: |
-                    echo "Preparing backend for deploy (installing production deps)..."
+                    Write-Host "Preparing backend for deploy (installing production deps)..."
                     cd "$(Pipeline.Workspace)/drop-back"
-                    if exist package.json (
+                    if (Test-Path 'package.json') {
                       npm ci --only=production
-                    ) else (
-                      echo "No package.json found in drop-back"
-                    )
+                    } else {
+                      Write-Host "No package.json found in drop-back"
+                    }
                   displayName: "Prepare backend (npm ci)"
 
                 - task: ArchiveFiles@2
@@ -173,7 +173,7 @@ stages:
                   #displayName: "Debug - Revisar contenido del frontend"
 
                 - script: |
-                    echo "REACT_APP_API_URL=https://tp05-backend-qa-chdtg5exgzarc7hd.brazilsouth-01.azurewebsites.net" > .env
+                    Set-Content -Path .env -Value 'REACT_APP_API_URL=https://tp05-backend-qa-chdtg5exgzarc7hd.brazilsouth-01.azurewebsites.net'
                   displayName: "Configurar API URL para QA"
                 
                 #- script: set
@@ -248,7 +248,7 @@ stages:
                     package: "$(Pipeline.Workspace)/drop-back.zip"
                 
                 - script: |
-                    echo "REACT_APP_API_URL=https://tp05-backend-prod-cudvdwd9c0exdbhc.brazilsouth-01.azurewebsites.net" > .env
+                    Set-Content -Path .env -Value 'REACT_APP_API_URL=https://tp05-backend-prod-cudvdwd9c0exdbhc.brazilsouth-01.azurewebsites.net'
                   displayName: "Configurar API URL para PROD"
 
                 # Frontend PROD

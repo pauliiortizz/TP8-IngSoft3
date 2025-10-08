@@ -1,15 +1,15 @@
-const UserController = require('../../app'); // we'll import app and call handler functions via supertest where suitable
-const db = require('../../db');
-const { User } = require('../../models/user');
-
-jest.mock('../../models/user', () => {
+// Mock the model before requiring modules that use it
+jest.mock('../models/user', () => {
   return {
-    User: {
-      findOne: jest.fn(),
-      create: jest.fn(),
-    }
+    findOne: jest.fn(),
+    create: jest.fn(),
   };
 });
+
+const User = require('../models/user');
+const db = require('../db');
+// we'll import app and call handler functions via supertest where suitable
+const UserController = require('../app');
 
 describe('User service unit tests (mocked Sequelize)', () => {
   beforeEach(() => {
@@ -23,11 +23,11 @@ describe('User service unit tests (mocked Sequelize)', () => {
       json: jest.fn()
     };
 
-    User.findOne.mockResolvedValue(null);
-    User.create.mockResolvedValue({ id: 123, name: 'unique-name', email: 'a@a.com' });
+  User.findOne.mockResolvedValue(null);
+  User.create.mockResolvedValue({ id: 123, name: 'unique-name', email: 'a@a.com' });
 
     // call the actual route handler from app.js by requiring the module and extracting the POST handler
-    const app = require('../../app');
+  const app = require('../app');
     const supertest = require('supertest');
     const request = supertest(app);
 
@@ -37,9 +37,9 @@ describe('User service unit tests (mocked Sequelize)', () => {
   });
 
   test('should return 409 when user already exists', async () => {
-    User.findOne.mockResolvedValue({ id: 1, name: 'dup', email: 'dup@example.com' });
+  User.findOne.mockResolvedValue({ id: 1, name: 'dup', email: 'dup@example.com' });
 
-    const app = require('../../app');
+  const app = require('../app');
     const supertest = require('supertest');
     const request = supertest(app);
 
