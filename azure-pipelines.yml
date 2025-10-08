@@ -122,6 +122,17 @@ stages:
                     azureSubscription: "azure-connection-tp06"
                     appName: "tp05-backend-qa"
                     package: "$(Pipeline.Workspace)/drop-back.zip"
+                # Debug: comprobar que las variables DB_* llegaron al agente (NO imprime el secreto)
+                - task: PowerShell@2
+                  displayName: 'Debug - Check DB env presence (no secret shown)'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      Write-Host "DBG: DB_HOST = $env:DB_HOST"
+                      Write-Host "DBG: DB_USER = $env:DB_USER"
+                      if ($env:DB_PASSWORD) { Write-Host "DBG: DB_PASSWORD is SET" } else { Write-Host "DBG: DB_PASSWORD is NOT SET" }
+                      Write-Host "DBG: DB_NAME = $env:DB_NAME"
+                      Write-Host "DBG: DB_PORT = $env:DB_PORT"
 
                 # Opcional: ejecutar migraciones (aplicar índice UNIQUE). Controlado por variable RUN_DB_MIGRATIONS
                 - task: PowerShell@2
