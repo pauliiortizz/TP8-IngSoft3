@@ -9,9 +9,10 @@ parameters:
     default: false
 
 variables:
-- group: StaticWebAppTokens
-- name: RUN_DB_MIGRATIONS
-  value: ${{ parameters.runDbMigrations }}
+  - group: StaticWebAppTokens
+  - group: DBSecrets
+  - name: RUN_DB_MIGRATIONS
+    value: ${{ parameters.runDbMigrations }}
 
 pool:
   name: Pauli   
