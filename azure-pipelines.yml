@@ -50,8 +50,10 @@ stages:
           - script: |
               cd frontend
               npm ci
-              npx jest --detectOpenHandles --forceExit --verbose
-            displayName: "Run Frontend Unit Tests"
+              set JEST_JUNIT_OUTPUT=./test-results/frontend-junit.xml
+              mkdir test-results || exit 0
+              npm run test:ci
+            displayName: "Run Frontend Unit Tests (CI reporter)"
 
           - task: PublishPipelineArtifact@1
             inputs:
@@ -71,8 +73,19 @@ stages:
 
           - script: |
               cd backend
-              npm test
-            displayName: "Run Backend Tests"
+              npm ci
+              set JEST_JUNIT_OUTPUT=./test-results/backend-junit.xml
+              mkdir test-results || exit 0
+              npm run test:ci
+            displayName: "Run Backend Tests (CI reporter)"
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/test-results/*.xml'
+              searchFolder: '$(Build.SourcesDirectory)'
+              failTaskOnFailedTests: true
 
           - task: PublishPipelineArtifact@1
             inputs:

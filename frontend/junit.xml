@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="5" failures="0" errors="0" time="6.005">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-10-08T02:13:06" time="0.722" tests="1">
+    <testcase classname=" getAllUsers devuelve usuarios" name=" getAllUsers devuelve usuarios" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-10-08T02:13:06" time="2.034" tests="1">
+    <testcase classname=" renderiza el título de la app" name=" renderiza el título de la app" time="0.082">
+    </testcase>
+  </testsuite>
+  <testsuite name="UserForm validation tests" errors="0" failures="0" skipped="0" timestamp="2025-10-08T02:13:06" time="3.691" tests="1">
+    <testcase classname="UserForm validation tests shows error when name is empty and does not call API" name="UserForm validation tests shows error when name is empty and does not call API" time="1.748">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2025-10-08T02:13:06" time="3.961" tests="2">
+    <testcase classname=" muestra usuarios de la API" name=" muestra usuarios de la API" time="1.927">
+    </testcase>
+    <testcase classname=" muestra mensaje cuando no hay usuarios" name=" muestra mensaje cuando no hay usuarios" time="0.015">
+    </testcase>
+  </testsuite>
+</testsuites>

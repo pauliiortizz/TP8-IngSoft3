@@ -70,10 +70,10 @@ export default function UserList() {
 
       {/* Lista */}
       <ul>
-        {users.length === 0 ? (
+        {(users || []).length === 0 ? (
           <p>No hay usuarios</p>
         ) : (
-          users.map((u) => (
+          (users || []).map((u) => (
             <li key={u.id}>
               {editingUser?.id === u.id ? (
                 <form onSubmit={handleUpdate}>

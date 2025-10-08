@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="9" failures="0" errors="0" time="1.493">
+  <testsuite name="User API integration tests" errors="0" failures="0" skipped="0" timestamp="2025-10-08T02:07:03" time="1.014" tests="1">
+    <testcase classname="User API integration tests create, get, update, delete user and unique name constraint" name="User API integration tests create, get, update, delete user and unique name constraint" time="0.138">
+    </testcase>
+  </testsuite>
+  <testsuite name="User API" errors="0" failures="0" skipped="0" timestamp="2025-10-08T02:07:04" time="0.347" tests="8">
+    <testcase classname="User API GET /ping debe responder pong" name="User API GET /ping debe responder pong" time="0.009">
+    </testcase>
+    <testcase classname="User API GET /users debe devolver lista (aunque vacía)" name="User API GET /users debe devolver lista (aunque vacía)" time="0.014">
+    </testcase>
+    <testcase classname="User API POST /users debe crear un usuario válido" name="User API POST /users debe crear un usuario válido" time="0.022">
+    </testcase>
+    <testcase classname="User API PUT /users/:id debe actualizar un usuario existente" name="User API PUT /users/:id debe actualizar un usuario existente" time="0.014">
+    </testcase>
+    <testcase classname="User API DELETE /users/:id debe eliminar un usuario existente" name="User API DELETE /users/:id debe eliminar un usuario existente" time="0.019">
+    </testcase>
+    <testcase classname="User API POST /users debe fallar si falta email" name="User API POST /users debe fallar si falta email" time="0.019">
+    </testcase>
+    <testcase classname="User API PUT /users/:id debe devolver 404 si el usuario no existe" name="User API PUT /users/:id debe devolver 404 si el usuario no existe" time="0.016">
+    </testcase>
+    <testcase classname="User API DELETE /users/:id debe devolver 404 si el usuario no existe" name="User API DELETE /users/:id debe devolver 404 si el usuario no existe" time="0.012">
+    </testcase>
+  </testsuite>
+</testsuites>
