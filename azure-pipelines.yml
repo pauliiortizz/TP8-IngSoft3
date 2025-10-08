@@ -123,16 +123,23 @@ stages:
                     package: "$(Pipeline.Workspace)/drop-back.zip"
 
                 # Opcional: ejecutar migraciones (aplicar índice UNIQUE). Controlado por variable RUN_DB_MIGRATIONS
-                - bash: |
-                    echo "RUN_DB_MIGRATIONS=$(RUN_DB_MIGRATIONS)"
-                    if [ "$(RUN_DB_MIGRATIONS)" = "true" ]; then
-                      echo "Running DB migration: add unique index on users.name"
-                      cd "$(Pipeline.Workspace)/drop-back"
-                      npm run migrate:add-unique-name
-                    else
-                      echo "Skipping DB migrations (RUN_DB_MIGRATIONS != true)"
-                    fi
+                - task: PowerShell@2
                   displayName: "(Opt) Run DB migrations"
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      Write-Host "RUN_DB_MIGRATIONS=$(RUN_DB_MIGRATIONS)"
+                      if ("$(RUN_DB_MIGRATIONS)" -eq "true") {
+                        Write-Host "Running DB migration: add unique index on users.name"
+                        Push-Location "$(Pipeline.Workspace)\drop-back"
+                        try {
+                          npm run migrate:add-unique-name
+                        } finally {
+                          Pop-Location
+                        }
+                      } else {
+                        Write-Host "Skipping DB migrations (RUN_DB_MIGRATIONS != true)"
+                      }
 
                 #- script: |
                     #cd "$(Pipeline.Workspace)/drop-front"
