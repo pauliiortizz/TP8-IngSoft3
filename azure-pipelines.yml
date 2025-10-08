@@ -47,7 +47,7 @@ stages:
               dir /s build
             displayName: "Build React App (con debug extendido)"
 
-          - script: |
+          - powershell: |
               cd frontend
               # set env var for jest-junit (PowerShell)
               $env:JEST_JUNIT_OUTPUT = './test-results/frontend-junit.xml'
@@ -71,7 +71,7 @@ stages:
               npm ci 
             displayName: "Instalar dependencias de producción Backend"
 
-          - script: |
+          - powershell: |
               cd backend
               # set env var for jest-junit (PowerShell)
               $env:JEST_JUNIT_OUTPUT = './test-results/backend-junit.xml'
@@ -111,7 +111,7 @@ stages:
                 - download: current
                   artifact: drop-back
 
-                - script: |
+                - powershell: |
                     Write-Host "Preparing backend for deploy (installing production deps)..."
                     cd "$(Pipeline.Workspace)/drop-back"
                     if (Test-Path 'package.json') {
@@ -172,7 +172,7 @@ stages:
                     #dir
                   #displayName: "Debug - Revisar contenido del frontend"
 
-                - script: |
+                - powershell: |
                     Set-Content -Path .env -Value 'REACT_APP_API_URL=https://tp05-backend-qa-chdtg5exgzarc7hd.brazilsouth-01.azurewebsites.net'
                   displayName: "Configurar API URL para QA"
                 
@@ -247,7 +247,7 @@ stages:
                     appName: "tp05-backend-prod"
                     package: "$(Pipeline.Workspace)/drop-back.zip"
                 
-                - script: |
+                - powershell: |
                     Set-Content -Path .env -Value 'REACT_APP_API_URL=https://tp05-backend-prod-cudvdwd9c0exdbhc.brazilsouth-01.azurewebsites.net'
                   displayName: "Configurar API URL para PROD"
 
