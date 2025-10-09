@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace EmployeeCrudApi.Controllers
 {
@@ -12,10 +13,12 @@ namespace EmployeeCrudApi.Controllers
     public class ProductController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(ApplicationDbContext context)
+        public ProductController(ApplicationDbContext context, ILogger<ProductController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -35,7 +38,7 @@ namespace EmployeeCrudApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Product product)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) { _logger.LogWarning("Invalid model state on Create"); return BadRequest(ModelState); }
             if (product.Stock < 0 || product.Stock > 100) return BadRequest(new { error = "Stock must be between 0 and 100" });
 
             if (string.IsNullOrWhiteSpace(product.Name)) return BadRequest(new { error = "Name is required" });
@@ -83,7 +86,7 @@ namespace EmployeeCrudApi.Controllers
 
             // Check duplicates case-insensitive
             var exists = await _context.Products.AnyAsync(p => p.Name.ToLower() == normalized.ToLower());
-            if (exists) return BadRequest(new { error = "Duplicate name" });
+            if (exists) { _logger.LogWarning("Duplicate name attempted: {Name}", normalized); return BadRequest(new { error = "Duplicate name" }); }
 
             product.Name = normalized;
             product.CreatedDate = System.DateTime.UtcNow;
@@ -96,8 +99,8 @@ namespace EmployeeCrudApi.Controllers
         public async Task<IActionResult> Update([FromBody] Product product)
         {
             var existing = await _context.Products.FindAsync(product.Id);
-            if (existing == null) return NotFound();
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (existing == null) { _logger.LogWarning("Update not found for id {Id}", product.Id); return NotFound(); }
+            if (!ModelState.IsValid) { _logger.LogWarning("Invalid model state on Update for id {Id}", product.Id); return BadRequest(ModelState); }
             if (product.Stock < 0 || product.Stock > 100) return BadRequest(new { error = "Stock must be between 0 and 100" });
 
             if (string.IsNullOrWhiteSpace(product.Name)) return BadRequest(new { error = "Name is required" });
@@ -140,7 +143,7 @@ namespace EmployeeCrudApi.Controllers
             var normalized = NormalizeNameLocal(product.Name);
             // Check duplicate names for other records (excluding current)
             var exists = await _context.Products.AnyAsync(p => p.Id != product.Id && p.Name.ToLower() == normalized.ToLower());
-            if (exists) return BadRequest(new { error = "Duplicate name" });
+            if (exists) { _logger.LogWarning("Duplicate name attempted on update: {Name}", normalized); return BadRequest(new { error = "Duplicate name" }); }
 
             existing.Name = normalized;
             existing.Stock = product.Stock;
@@ -153,8 +156,8 @@ namespace EmployeeCrudApi.Controllers
         public async Task<IActionResult> SetStock(int id, [FromBody] StockDto dto)
         {
             var existing = await _context.Products.FindAsync(id);
-            if (existing == null) return NotFound();
-            if (dto == null) return BadRequest(new { error = "Invalid payload" });
+            if (existing == null) { _logger.LogWarning("SetStock not found for id {Id}", id); return NotFound(); }
+            if (dto == null) { _logger.LogWarning("SetStock invalid payload for id {Id}", id); return BadRequest(new { error = "Invalid payload" }); }
             if (dto.Amount < 0 || dto.Amount > 100) return BadRequest(new { error = "Stock must be between 0 and 100" });
             existing.Stock = dto.Amount;
             await _context.SaveChangesAsync();
@@ -166,8 +169,8 @@ namespace EmployeeCrudApi.Controllers
         public async Task<IActionResult> IncrementStock(int id, [FromBody] StockDto dto)
         {
             var existing = await _context.Products.FindAsync(id);
-            if (existing == null) return NotFound();
-            if (dto == null) return BadRequest(new { error = "Invalid payload" });
+            if (existing == null) { _logger.LogWarning("IncrementStock not found for id {Id}", id); return NotFound(); }
+            if (dto == null) { _logger.LogWarning("IncrementStock invalid payload for id {Id}", id); return BadRequest(new { error = "Invalid payload" }); }
             var newStock = existing.Stock + dto.Amount;
             if (newStock < 0 || newStock > 100) return BadRequest(new { error = "Stock must be between 0 and 100" });
             existing.Stock = newStock;
@@ -180,8 +183,8 @@ namespace EmployeeCrudApi.Controllers
         public async Task<IActionResult> DecrementStock(int id, [FromBody] StockDto dto)
         {
             var existing = await _context.Products.FindAsync(id);
-            if (existing == null) return NotFound();
-            if (dto == null) return BadRequest(new { error = "Invalid payload" });
+            if (existing == null) { _logger.LogWarning("DecrementStock not found for id {Id}", id); return NotFound(); }
+            if (dto == null) { _logger.LogWarning("DecrementStock invalid payload for id {Id}", id); return BadRequest(new { error = "Invalid payload" }); }
             var newStock = existing.Stock - dto.Amount;
             if (newStock < 0 || newStock > 100) return BadRequest(new { error = "Stock must be between 0 and 100" });
             existing.Stock = newStock;
@@ -196,7 +199,7 @@ namespace EmployeeCrudApi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var existing = await _context.Products.FindAsync(id);
-            if (existing == null) return NotFound();
+            if (existing == null) { _logger.LogWarning("Delete not found for id {Id}", id); return NotFound(); }
             _context.Products.Remove(existing);
             await _context.SaveChangesAsync();
             return NoContent();
