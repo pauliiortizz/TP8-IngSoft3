@@ -1,34 +1,28 @@
-# TP06 - Pruebas Unitarias (Resumen y comandos)
 
-Este repositorio contiene frontend (React) y backend (Node/Express + Sequelize).
+# ASPNet Core WebApi Crud Angular Example 2024
+Cloned from https://github.com/zsharadze/ASPNetCoreWebApiCrudAngular and modified.
+This is ASP.Net Core 8 Web Api and Angular crud example.
 
-Cambios implementados para TP06:
-- Validación de palabras inapropiadas (backend + frontend).
-- Prevención de nombres duplicados al crear (POST) y al editar (PUT) en backend.
-- Validaciones espejo en frontend (bloquea envío y muestra error).
-- Tests nuevos: backend integration tests para badwords y duplicate-on-update; frontend component tests para validaciones.
+## Getting Started
 
-Cómo ejecutar los tests localmente (Windows cmd):
+1. Desde la terminal, navegar hasta el directorio `EmployeeCrudApi`, donde se encuentra el archivo del proyecto `EmployeeCrudApi.csproj`
+2. En appsettings.json cambiar la DefaultConnection string.
+3. Ejecutar el siguiente comando:
+   ```bash
+   dotnet run --urls "http://localhost:7150"
 
-Backend:
-```
-cd C:\Users\BANGHO\TP6\backend
-npm ci
-set JEST_JUNIT_OUTPUT=./test-results/backend-junit.xml
-mkdir test-results 2>nul
-npm run test:ci
-```
+  ![image](https://github.com/user-attachments/assets/62e91a8f-b386-42c4-bde6-05f430e5a001)
+  
+4. Navegar a http://localhost:7150/swagger/index.html y probar los Endpoints.
+![image](https://github.com/user-attachments/assets/9d72741d-de29-445a-b1fd-961ffad5aaf7)
 
-Frontend:
-```
-cd C:\Users\BANGHO\TP6\frontend
-npm ci
-set JEST_JUNIT_OUTPUT=./test-results/frontend-junit.xml
-mkdir test-results 2>nul
-npm run test:ci
-```
+5. En otra terminal, ir hasta el directorio EmployeeCrudAngular y ejecutar el siguiente comando para restaurar las dependencias:
+   ```bash
+   npm install
+6. Ejecutar el siguiente comando para restaurar las dependencias:
+   ```bash
+   ng serve -o 
+7. Navegar a http://localhost:4200/
+![image](https://github.com/user-attachments/assets/3647c970-09e6-4b93-a431-7880d47b7034)
 
-Notas:
-- Los tests del backend usan sqlite in-memory cuando NODE_ENV=test.
-- La lista de palabras prohibidas está en `backend/utils/badwords.js` y `frontend/src/utils/badwords.js` (puedes ajustarla).
-- `decisiones.md` documenta la estrategia y evidencia requerida.
+
