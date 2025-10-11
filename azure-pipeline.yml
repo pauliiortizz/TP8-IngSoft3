@@ -28,11 +28,11 @@ steps:
 
   - script: dotnet restore
     displayName: 'Restore .NET'
-    workingDirectory: EmployeeCrudApi
+    workingDirectory: Backend
 
   - script: dotnet build --configuration Debug --no-restore
     displayName: 'Build .NET'
-    workingDirectory: EmployeeCrudApi
+    workingDirectory: Backend
 
   - script: >-
       dotnet test --configuration Debug
@@ -40,7 +40,7 @@ steps:
       --collect:"XPlat Code Coverage"
       --results-directory "$(Build.SourcesDirectory)/test-results"
     displayName: 'Test .NET'
-    workingDirectory: EmployeeCrudApi.Tests
+    workingDirectory: Backend.Tests
 
   - task: PublishTestResults@2
     displayName: 'Publish .NET Test Results'
@@ -54,24 +54,31 @@ steps:
 
   - script: npm ci
     displayName: 'Install Angular deps'
-    workingDirectory: EmployeeCrudAngular
+    workingDirectory: Frontend
+
+  - task: Cache@2
+    displayName: 'Cache Angular build cache (.angular/cache)'
+    inputs:
+      key: 'angular-cache | $(Agent.OS) | "$(Build.SourcesDirectory)/Frontend/package-lock.json"'
+      restoreKeys: 'angular-cache | $(Agent.OS) |'
+      path: '$(Build.SourcesDirectory)/Frontend/.angular/cache'
 
   - script: npm run test:coverage --silent
     displayName: 'Test Angular (headless)'
-    workingDirectory: EmployeeCrudAngular
+    workingDirectory: Frontend
 
   - task: PublishTestResults@2
     displayName: 'Publish Angular JUnit'
     inputs:
       testResultsFormat: 'JUnit'
-      testResultsFiles: 'EmployeeCrudAngular/test-results/*.xml'
+      testResultsFiles: 'Frontend/test-results/*.xml'
       mergeTestResults: true
       failTaskOnFailedTests: true
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Angular Coverage HTML'
     inputs:
-      PathtoPublish: 'EmployeeCrudAngular/coverage'
+      PathtoPublish: 'Frontend/coverage'
       ArtifactName: 'angular-coverage'
       publishLocation: 'Container'
 

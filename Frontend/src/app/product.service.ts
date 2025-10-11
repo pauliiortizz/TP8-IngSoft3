@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Product } from './employee.model';
+import { Product } from './product.model';
 import { map } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { environment } from '../environments/environment'; // Importa el environment

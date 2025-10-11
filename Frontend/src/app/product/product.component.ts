@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { EmployeeService } from '../employee.service';
-import { Product } from '../employee.model';
+import { EmployeeService } from '../product.service';
+import { Product } from '../product.model';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -12,8 +12,8 @@ import { ToastService } from '../toast.service';
   selector: 'app-employee',
   standalone: true,
   imports:[CommonModule],
-  templateUrl: './employee.component.html',
-  styleUrls: ['./employee.component.css'],
+  templateUrl: './product.component.html',
+  styleUrls: ['./product.component.css'],
 })
 export class EmployeeComponent implements OnInit {
   employees: Observable<Product[]> = new Observable<Product[]>();

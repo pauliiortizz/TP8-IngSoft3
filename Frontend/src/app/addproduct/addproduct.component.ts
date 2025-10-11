@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from '../employee.model';
-import { EmployeeService } from '../employee.service';
+import { Product } from '../product.model';
+import { EmployeeService } from '../product.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,8 +10,8 @@ import { ToastService } from '../toast.service';
   selector: 'app-addemployee',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './addemployee.component.html',
-  styleUrls: ['./addemployee.component.css']
+  templateUrl: './addproduct.component.html',
+  styleUrls: ['./addproduct.component.css']
 })
 export class AddemployeeComponent implements OnInit {
   newEmployee: Product = new Product(0, '', '', 0);

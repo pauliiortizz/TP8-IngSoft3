@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { AddemployeeComponent } from './addemployee.component';
+import { AddemployeeComponent } from './addproduct.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs'; // para simular observables
 import { DatePipe } from '@angular/common';
-import { EmployeeService } from '../employee.service';
+import { EmployeeService } from '../product.service';
 import { ToastService } from '../toast.service';
-import { Product } from '../employee.model';
+import { Product } from '../product.model';
 
 describe('AddemployeeComponent', () => {
   let mockEmployeeService: any;

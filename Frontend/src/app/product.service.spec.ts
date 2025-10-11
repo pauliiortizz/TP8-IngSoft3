@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { EmployeeService } from './employee.service';
-import { Employee, Product } from './employee.model';
+import { EmployeeService } from './product.service';
+import { Employee, Product } from './product.model';
 import { DatePipe } from '@angular/common';
 
 describe('EmployeeService', () => {

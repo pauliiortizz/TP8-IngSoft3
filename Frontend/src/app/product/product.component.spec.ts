@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { EmployeeComponent } from './employee.component';
+import { EmployeeComponent } from './product.component';
 import { of, throwError } from 'rxjs';
-import { EmployeeService } from '../employee.service';
+import { EmployeeService } from '../product.service';
 import { Router } from '@angular/router';
 import { ToastService } from '../toast.service';
 
