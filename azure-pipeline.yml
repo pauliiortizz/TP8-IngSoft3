@@ -1,59 +1,83 @@
-name: CI
+trigger:
+  branches:
+    include:
+      - main
+      - master
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
+pr:
+  branches:
+    include:
+      - '*'
 
-jobs:
-  build-and-test:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+pool:
+  name: Pauli
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+steps:
+  - checkout: self
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+  - task: UseDotNet@2
+    displayName: 'Setup .NET 8'
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.x'
 
-      - name: Restore .NET
-        working-directory: EmployeeCrudApi
-        run: dotnet restore
+  - task: NodeTool@0
+    displayName: 'Setup Node.js 20'
+    inputs:
+      versionSpec: '20.x'
 
-      - name: Build .NET
-        working-directory: EmployeeCrudApi
-        run: dotnet build --configuration Debug --no-restore
+  - script: dotnet restore
+    displayName: 'Restore .NET'
+    workingDirectory: EmployeeCrudApi
 
-      - name: Test .NET
-        working-directory: EmployeeCrudApi.Tests
-        run: dotnet test --configuration Debug --logger "trx;LogFileName=dotnet-tests.trx" --collect:"XPlat Code Coverage" --results-directory ../test-results
+  - script: dotnet build --configuration Debug --no-restore
+    displayName: 'Build .NET'
+    workingDirectory: EmployeeCrudApi
 
-      - name: Upload .NET Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: dotnet-test-results
-          path: test-results
+  - script: >-
+      dotnet test --configuration Debug
+      --logger "trx;LogFileName=dotnet-tests.trx"
+      --collect:"XPlat Code Coverage"
+      --results-directory "$(Build.SourcesDirectory)/test-results"
+    displayName: 'Test .NET'
+    workingDirectory: EmployeeCrudApi.Tests
 
-      - name: Install Angular deps
-        working-directory: EmployeeCrudAngular
-        run: npm ci
+  - task: PublishTestResults@2
+    displayName: 'Publish .NET Test Results'
+    inputs:
+      testResultsFormat: 'VSTest'
+      testResultsFiles: 'test-results/*.trx'
+      searchFolder: '$(Build.SourcesDirectory)'
+      testRunTitle: '.NET Tests'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
 
-      - name: Test Angular (headless)
-        working-directory: EmployeeCrudAngular
-        run: npm run test:coverage --silent
+  - script: npm ci
+    displayName: 'Install Angular deps'
+    workingDirectory: EmployeeCrudAngular
 
-      - name: Upload Angular Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: angular-test-results
-          path: |
-            EmployeeCrudAngular/test-results
-            EmployeeCrudAngular/coverage
+  - script: npm run test:coverage --silent
+    displayName: 'Test Angular (headless)'
+    workingDirectory: EmployeeCrudAngular
+
+  - task: PublishTestResults@2
+    displayName: 'Publish Angular JUnit'
+    inputs:
+      testResultsFormat: 'JUnit'
+      testResultsFiles: 'EmployeeCrudAngular/test-results/*.xml'
+      mergeTestResults: true
+      failTaskOnFailedTests: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Angular Coverage HTML'
+    inputs:
+      PathtoPublish: 'EmployeeCrudAngular/coverage'
+      ArtifactName: 'angular-coverage'
+      publishLocation: 'Container'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish .NET Coverage (raw)'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)/test-results'
+      ArtifactName: 'dotnet-test-results'
+      publishLocation: 'Container'
