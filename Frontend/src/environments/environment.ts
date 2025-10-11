@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5228/api/Product'  // URL de la API para desarrollo (productos) - actualizado al puerto donde corre la API
+  apiUrl: 'http://localhost:7150/api/Product'  // URL de la API para desarrollo (productos) - actualizado al puerto donde corre la API
 };
 
 
