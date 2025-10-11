@@ -26,11 +26,11 @@ steps:
     inputs:
       versionSpec: '20.x'
 
-  - script: dotnet restore
+  - script: dotnet restore ProductApi.sln
     displayName: 'Restore .NET'
     workingDirectory: Backend
 
-  - script: dotnet build --configuration Debug --no-restore
+  - script: dotnet build ProductApi.sln --configuration Debug --no-restore
     displayName: 'Build .NET'
     workingDirectory: Backend
 
