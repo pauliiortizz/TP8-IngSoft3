@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace EmployeeCrudApi.Tests
 {
@@ -31,7 +33,8 @@ namespace EmployeeCrudApi.Tests
             );
             context.SaveChanges();
 
-            var controller = new ProductController(context);
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(context, logger.Object);
 
             // Act
             var result = await controller.GetAll();
@@ -50,7 +53,8 @@ namespace EmployeeCrudApi.Tests
             context.Products.Add(new Product { Id = 1, Name = "John DOE" });
             context.SaveChanges();
 
-            var controller = new ProductController(context);
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(context, logger.Object);
 
             // Act
             var result = await controller.GetById(1);
@@ -66,7 +70,8 @@ namespace EmployeeCrudApi.Tests
         {
             // Arrange
             var context = GetInMemoryDbContext();
-            var controller = new ProductController(context);
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(context, logger.Object);
 
             var newProduct = new Product { Id = 3, Name = "New Product" };
 
@@ -88,7 +93,8 @@ namespace EmployeeCrudApi.Tests
             var existingProduct = new Product { Id = 1, Name = "Old NAME" };
             context.Products.Add(existingProduct);
             context.SaveChanges();
-            var controller = new ProductController(context);
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(context, logger.Object);
 
             var updatedProduct = new Product { Id = 1, Name = "Updated Name" };
 
@@ -109,7 +115,8 @@ namespace EmployeeCrudApi.Tests
             var productToDelete = new Product { Id = 1, Name = "John Doe" };
             context.Products.Add(productToDelete);
             context.SaveChanges();
-            var controller = new ProductController(context);
+            var logger = new Moq.Mock<Microsoft.Extensions.Logging.ILogger<ProductController>>();
+            var controller = new ProductController(context, logger.Object);
 
             // Act
             await controller.Delete(1);
@@ -120,12 +127,28 @@ namespace EmployeeCrudApi.Tests
         }
 
         [Fact]
+        public async Task Delete_NotFound_ReturnsNotFound()
+        {
+            // Arrange
+            var context = GetInMemoryDbContext();
+            var logger = new Moq.Mock<Microsoft.Extensions.Logging.ILogger<ProductController>>();
+            var controller = new ProductController(context, logger.Object);
+
+            // Act
+            var result = await controller.Delete(12345);
+
+            // Assert
+            Assert.IsType<Microsoft.AspNetCore.Mvc.NotFoundResult>(result);
+        }
+
+        [Fact]
         public async Task Create_Rejects_DuplicateName()
         {
             var context = GetInMemoryDbContext();
             context.Products.Add(new Product { Id = 1, Name = "Existing User" });
             context.SaveChanges();
-            var controller = new EmployeeCrudApi.Controllers.ProductController(context);
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new EmployeeCrudApi.Controllers.ProductController(context, logger.Object);
             var newProduct = new Product { Id = 2, Name = "existing user" }; // different case
 
             var result = await controller.Create(newProduct);
@@ -137,7 +160,8 @@ namespace EmployeeCrudApi.Tests
         public async Task Create_Formats_Name_As_GivenAndUppercaseSurname()
         {
             var context = GetInMemoryDbContext();
-            var controller = new EmployeeCrudApi.Controllers.ProductController(context);
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new EmployeeCrudApi.Controllers.ProductController(context, logger.Object);
 
             var newProduct = new Product { Id = 5, Name = "juan carlos chamizo" };
             var result = await controller.Create(newProduct);
@@ -151,7 +175,8 @@ namespace EmployeeCrudApi.Tests
         public async Task Create_Rejects_Names_With_Digits()
         {
             var context = GetInMemoryDbContext();
-            var controller = new EmployeeCrudApi.Controllers.ProductController(context);
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new EmployeeCrudApi.Controllers.ProductController(context, logger.Object);
 
             var newProduct = new Product { Id = 6, Name = "John D0e" };
             var result = await controller.Create(newProduct);
@@ -163,7 +188,8 @@ namespace EmployeeCrudApi.Tests
         public async Task Create_Rejects_Excessive_Repeats()
         {
             var context = GetInMemoryDbContext();
-            var controller = new EmployeeCrudApi.Controllers.ProductController(context);
+            var logger = new Moq.Mock<Microsoft.Extensions.Logging.ILogger<ProductController>>();
+            var controller = new EmployeeCrudApi.Controllers.ProductController(context, logger.Object);
 
             var newProduct = new Product { Id = 7, Name = "Juuuuaannnn Perez" };
             var result = await controller.Create(newProduct);

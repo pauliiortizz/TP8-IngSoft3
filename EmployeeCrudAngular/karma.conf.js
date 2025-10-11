@@ -7,7 +7,14 @@ module.exports = function (config) {
       require('karma-junit-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
-    reporters: ['progress', 'junit'],
+    reporters: ['progress', 'junit', 'coverage'],
+    coverageReporter: {
+      dir: 'coverage',
+      reporters: [
+        { type: 'html', subdir: 'html' },
+        { type: 'text-summary' }
+      ]
+    },
     junitReporter: {
       outputDir: 'test-results',
       outputFile: 'test-results.xml',

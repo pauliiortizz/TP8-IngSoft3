@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore .NET
+        working-directory: EmployeeCrudApi
+        run: dotnet restore
+
+      - name: Build .NET
+        working-directory: EmployeeCrudApi
+        run: dotnet build --configuration Debug --no-restore
+
+      - name: Test .NET
+        working-directory: EmployeeCrudApi.Tests
+        run: dotnet test --configuration Debug --logger "trx;LogFileName=dotnet-tests.trx" --collect:"XPlat Code Coverage" --results-directory ../test-results
+
+      - name: Upload .NET Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dotnet-test-results
+          path: test-results
+
+      - name: Install Angular deps
+        working-directory: EmployeeCrudAngular
+        run: npm ci
+
+      - name: Test Angular (headless)
+        working-directory: EmployeeCrudAngular
+        run: npm run test:coverage --silent
+
+      - name: Upload Angular Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: angular-test-results
+          path: |
+            EmployeeCrudAngular/test-results
+            EmployeeCrudAngular/coverage

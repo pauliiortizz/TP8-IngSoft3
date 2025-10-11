@@ -3,6 +3,9 @@ using EmployeeCrudApi.Data;
 using EmployeeCrudApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
@@ -101,7 +104,7 @@ namespace EmployeeCrudApi.Tests
             var result = await controller.Create(new Product { Id = 10, Name = "" });
             Assert.IsType<BadRequestObjectResult>(result);
         }
-    }
+
         [Fact]
         public async Task Create_DuplicateName_LogsWarning_WithMoq()
         {
@@ -173,4 +176,5 @@ namespace EmployeeCrudApi.Tests
             var result = await controller.Update(new Product { Id = 999, Name = "X" });
             Assert.IsType<NotFoundResult>(result);
         }
+    }
 }

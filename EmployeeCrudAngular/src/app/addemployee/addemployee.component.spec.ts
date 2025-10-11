@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { AddemployeeComponent } from './addemployee.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs'; // para simular observables
 import { DatePipe } from '@angular/common';
 import { EmployeeService } from '../employee.service';
@@ -29,6 +29,7 @@ describe('AddemployeeComponent', () => {
       imports: [AddemployeeComponent, HttpClientTestingModule],
       providers: [
         DatePipe,
+        { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
         {
           provide: ActivatedRoute, // Simula ActivatedRoute
           useValue: {
@@ -72,5 +73,45 @@ describe('AddemployeeComponent', () => {
     component.addEmployee(emp);
     expect(emp.name).toBe('Juan Carlos CHAMIZO');
     expect(mockEmployeeService.createEmployee).toHaveBeenCalled();
+  });
+
+  it('should reject negative stock', () => {
+    const fixture = TestBed.createComponent(AddemployeeComponent);
+    const component = fixture.componentInstance;
+    const emp = new Product(0, 'John Doe', '', -1);
+    component.addEmployee(emp);
+    expect(mockToastService.showError).toHaveBeenCalled();
+    expect(mockEmployeeService.createEmployee).not.toHaveBeenCalled();
+  });
+
+  it('should reject stock over 100', () => {
+    const fixture = TestBed.createComponent(AddemployeeComponent);
+    const component = fixture.componentInstance;
+    const emp = new Product(0, 'John Doe', '', 101);
+    component.addEmployee(emp);
+    expect(mockToastService.showError).toHaveBeenCalled();
+    expect(mockEmployeeService.createEmployee).not.toHaveBeenCalled();
+  });
+
+  it('should show error on duplicate name (case-insensitive) and not call API', () => {
+    mockEmployeeService.getAllEmployee.and.returnValue(of([{ id: 5, name: 'John DOE' }]));
+    const fixture = TestBed.createComponent(AddemployeeComponent);
+    const component = fixture.componentInstance;
+    const emp = new Product(0, 'john doe', '', 10);
+    component.addEmployee(emp);
+    expect(mockToastService.showError).toHaveBeenCalled();
+    expect(mockEmployeeService.createEmployee).not.toHaveBeenCalled();
+  });
+
+  it('should show error toast when API returns error on create', () => {
+    mockEmployeeService.createEmployee.and.returnValue(
+      // eslint-disable-next-line rxjs/no-ignored-error
+      new (class { subscribe = (o: any) => o.error(new Error('boom')); })() as any
+    );
+    const fixture = TestBed.createComponent(AddemployeeComponent);
+    const component = fixture.componentInstance;
+    const emp = new Product(0, 'John Doe', '', 10);
+    component.addEmployee(emp);
+    expect(mockToastService.showError).toHaveBeenCalled();
   });
 });

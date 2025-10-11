@@ -80,6 +80,14 @@ export class AddemployeeComponent implements OnInit {
   private validateAndFormat(employee: Product): { valid: boolean; error?: string } {
     if (!employee || !employee.name || employee.name.trim().length === 0) return { valid: false, error: 'El nombre es obligatorio' };
 
+    // Stock validations (align with backend 0..100 rule)
+    if (employee.stock == null || Number.isNaN(employee.stock as any)) {
+      return { valid: false, error: 'El stock es obligatorio' };
+    }
+    if (employee.stock < 0 || employee.stock > 100) {
+      return { valid: false, error: 'El stock debe estar entre 0 y 100' };
+    }
+
     let name = employee.name.replace(/\u00A0/g, ' ').trim().replace(/\s+/g, ' ');
   if (name.length < 2) return { valid: false, error: 'El nombre debe tener al menos 2 caracteres' };
 

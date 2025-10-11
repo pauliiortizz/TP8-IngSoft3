@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { EmployeeService } from './employee.service';
-import { Employee } from './employee.model';
+import { Employee, Product } from './employee.model';
 import { DatePipe } from '@angular/common';
 
 describe('EmployeeService', () => {
@@ -54,5 +54,33 @@ describe('EmployeeService', () => {
     req.flush(dummyEmployees);
   });
 
+
+  it('should call GET by id with correct URL', () => {
+    service.getEmployeeById(42).subscribe();
+    const req = httpMock.expectOne(`${service.apiUrlEmployee}/42`);
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should POST to create with correct URL and body', () => {
+    const p = new Product(0, 'John DOE', '', 10);
+    service.createEmployee(p).subscribe();
+    const req = httpMock.expectOne(`${service.apiUrlEmployee}`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(p);
+  });
+
+  it('should PUT to update with correct URL and body', () => {
+    const p = new Product(5, 'John DOE', '', 20);
+    service.updateEmployee(p).subscribe();
+    const req = httpMock.expectOne(`${service.apiUrlEmployee}`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(p);
+  });
+
+  it('should DELETE with correct URL', () => {
+    service.deleteEmployeeById(99).subscribe();
+    const req = httpMock.expectOne(`${service.apiUrlEmployee}/99`);
+    expect(req.request.method).toBe('DELETE');
+  });
 
 });
