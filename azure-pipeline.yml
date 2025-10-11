@@ -63,7 +63,7 @@ steps:
       restoreKeys: 'angular-cache | $(Agent.OS) |'
       path: '$(Build.SourcesDirectory)/Frontend/.angular/cache'
 
-  - script: npm run test:coverage --silent
+  - script: npm run test:ci --silent
     displayName: 'Test Angular (headless)'
     workingDirectory: Frontend
 
