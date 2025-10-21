@@ -23,8 +23,27 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-  autoWatch: false,
-    browsers: ['ChromeHeadless'],
+    autoWatch: false,
+
+    // ✅ Lanzador personalizado para Azure DevOps / CI
+    browsers: ['ChromeHeadlessNoSandbox'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',               // necesario en entornos CI
+          '--disable-gpu',
+          '--disable-dev-shm-usage',    // evita bloqueos por memoria compartida
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+
+    // ✅ Timeouts más amplios (evita desconexiones)
+    captureTimeout: 120000,
+    browserDisconnectTimeout: 120000,
+    browserNoActivityTimeout: 120000,
+
     singleRun: true,
     restartOnFileChange: true
   });
