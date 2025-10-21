@@ -88,10 +88,12 @@ stages:
             path: '$(Build.SourcesDirectory)/Frontend/.angular/cache'
 
         - script: |
+            echo "🚀 Running Angular tests in Headless CI mode..."
             npx ng test --browsers=ChromeHeadlessCI --watch=false --no-progress --code-coverage
           displayName: "Run Angular Tests (Headless CI)"
           workingDirectory: Frontend
-
+          env:
+            CHROME_BIN: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
 
         - task: PublishTestResults@2
           displayName: "Publish Angular Test Results"
