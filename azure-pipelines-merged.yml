@@ -87,8 +87,9 @@ stages:
             restoreKeys: 'angular-cache | $(Agent.OS) |'
             path: '$(Build.SourcesDirectory)/Frontend/.angular/cache'
 
-        - script: npm run test:ci --silent
-          displayName: "Run Angular Tests (Headless)"
+        - script: |
+            npx karma start --no-auto-watch --single-run --browsers ChromeHeadlessCI
+          displayName: "Run Angular Tests (Headless CI)"
           workingDirectory: Frontend
 
         - task: PublishTestResults@2
