@@ -1,0 +1,189 @@
+trigger:
+  branches:
+    include:
+      - main
+      - master
+
+pr:
+  branches:
+    include:
+      - '*'
+
+variables:
+- group: StaticWebAppTokens
+
+pool:
+  name: Pauli
+
+stages:
+# =======================================
+# 🧱 BUILD & TEST
+# =======================================
+- stage: BuildAndTest
+  displayName: "Build & Test Backend + Frontend"
+  jobs:
+    - job: BuildAndTest
+      steps:
+        - checkout: self
+
+        # ---- Backend (.NET 8) ----
+        - task: UseDotNet@2
+          displayName: "Setup .NET 8"
+          inputs:
+            packageType: sdk
+            version: "8.0.x"
+
+        - script: dotnet restore ProductApi.sln
+          displayName: "Restore .NET"
+          workingDirectory: Backend
+
+        - script: dotnet build ProductApi.sln --configuration Release --no-restore
+          displayName: "Build .NET"
+          workingDirectory: Backend
+
+        - script: >
+            dotnet test --configuration Release
+            --logger "trx;LogFileName=dotnet-tests.trx"
+            --collect:"XPlat Code Coverage"
+            --results-directory "$(Build.SourcesDirectory)/test-results"
+          displayName: "Test .NET"
+          workingDirectory: Backend.Tests
+
+        - task: PublishTestResults@2
+          displayName: "Publish .NET Test Results"
+          inputs:
+            testResultsFormat: "VSTest"
+            testResultsFiles: "test-results/*.trx"
+            searchFolder: "$(Build.SourcesDirectory)"
+            mergeTestResults: true
+            failTaskOnFailedTests: true
+
+        # ---- Frontend (Angular 20) ----
+        - task: NodeTool@0
+          displayName: "Setup Node.js 20"
+          inputs:
+            versionSpec: "20.x"
+
+        - script: npm ci
+          displayName: "Install Angular Dependencies"
+          workingDirectory: Frontend
+
+        - task: Cache@2
+          displayName: "Cache Angular build cache"
+          inputs:
+            key: 'angular-cache | $(Agent.OS) | "$(Build.SourcesDirectory)/Frontend/package-lock.json"'
+            restoreKeys: 'angular-cache | $(Agent.OS) |'
+            path: '$(Build.SourcesDirectory)/Frontend/.angular/cache'
+
+        - script: npm run test:ci --silent
+          displayName: "Run Angular Tests (Headless)"
+          workingDirectory: Frontend
+
+        - task: PublishTestResults@2
+          displayName: "Publish Angular Test Results"
+          inputs:
+            testResultsFormat: "JUnit"
+            testResultsFiles: "Frontend/test-results/*.xml"
+            mergeTestResults: true
+            failTaskOnFailedTests: true
+
+        # ---- Publish Build Artifacts ----
+        - task: PublishBuildArtifacts@1
+          displayName: "Publish Backend Artifact"
+          inputs:
+            PathtoPublish: "$(Build.SourcesDirectory)/Backend"
+            ArtifactName: "drop-back"
+
+        - task: PublishBuildArtifacts@1
+          displayName: "Publish Frontend Artifact"
+          inputs:
+            PathtoPublish: "$(Build.SourcesDirectory)/Frontend/dist"
+            ArtifactName: "drop-front"
+
+# =======================================
+# 🌐 DEPLOY QA
+# =======================================
+- stage: Deploy_QA
+  displayName: "Deploy to QA"
+  dependsOn: BuildAndTest
+  jobs:
+    - deployment: DeployQA
+      displayName: "Desplegar QA"
+      environment: "QA"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - download: current
+                artifact: drop-back
+              - download: current
+                artifact: drop-front
+
+              - task: ArchiveFiles@2
+                displayName: "Empaquetar Backend (QA)"
+                inputs:
+                  rootFolderOrFile: "$(Pipeline.Workspace)/drop-back"
+                  includeRootFolder: false
+                  archiveFile: "$(Pipeline.Workspace)/drop-back.zip"
+                  replaceExistingArchive: true
+
+              - task: AzureWebApp@1
+                displayName: "Deploy Backend QA"
+                inputs:
+                  azureSubscription: "azure-connection-tp05"
+                  appName: "tp05-backend-qa"
+                  package: "$(Pipeline.Workspace)/drop-back.zip"
+
+              - script: |
+                  echo "REACT_APP_API_URL=https://tp05-backend-qa-chdtg5exgzarc7hd.brazilsouth-01.azurewebsites.net" > .env
+                displayName: "Configurar API URL para QA"
+
+              - script: |
+                  cd "$(Pipeline.Workspace)/drop-front"
+                  npm install -g @azure/static-web-apps-cli
+                  npx swa deploy ./ --app-location . --deployment-token $(SWA_TOKEN_QA)
+                displayName: "Deploy Frontend QA"
+
+# =======================================
+# 🚀 DEPLOY PROD
+# =======================================
+- stage: Deploy_PROD
+  displayName: "Deploy to Production"
+  dependsOn: Deploy_QA
+  jobs:
+    - deployment: DeployPROD
+      displayName: "Desplegar PROD"
+      environment: "PROD"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - download: current
+                artifact: drop-back
+              - download: current
+                artifact: drop-front
+
+              - task: ArchiveFiles@2
+                displayName: "Empaquetar Backend (PROD)"
+                inputs:
+                  rootFolderOrFile: "$(Pipeline.Workspace)/drop-back"
+                  includeRootFolder: false
+                  archiveFile: "$(Pipeline.Workspace)/drop-back.zip"
+                  replaceExistingArchive: true
+
+              - task: AzureWebApp@1
+                displayName: "Deploy Backend PROD"
+                inputs:
+                  azureSubscription: "azure-connection-tp05"
+                  appName: "tp05-backend-prod"
+                  package: "$(Pipeline.Workspace)/drop-back.zip"
+
+              - script: |
+                  echo "REACT_APP_API_URL=https://tp05-backend-prod-cudvdwd9c0exdbhc.brazilsouth-01.azurewebsites.net" > .env
+                displayName: "Configurar API URL para PROD"
+
+              - script: |
+                  cd "$(Pipeline.Workspace)/drop-front"
+                  npm install -g @azure/static-web-apps-cli
+                  npx swa deploy ./ --app-location . --deployment-token $(SWA_TOKEN_PROD) --env prod
+                displayName: "Deploy Frontend PROD"
