@@ -88,9 +88,10 @@ stages:
             path: '$(Build.SourcesDirectory)/Frontend/.angular/cache'
 
         - script: |
-            npx karma start --no-auto-watch --single-run --browsers ChromeHeadlessCI
+            npx ng test --browsers=ChromeHeadlessCI --watch=false --no-progress --code-coverage
           displayName: "Run Angular Tests (Headless CI)"
           workingDirectory: Frontend
+
 
         - task: PublishTestResults@2
           displayName: "Publish Angular Test Results"
