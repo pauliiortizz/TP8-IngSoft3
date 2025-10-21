@@ -34,6 +34,45 @@ dotnet run --project Backend/ProductosApi.csproj --urls "http://localhost:7150"
 
 3) Abrir: http://localhost:7150/admin
 
+## Conectar la API a MySQL en Clever Cloud
+
+La app usa EF Core con MySQL (Pomelo). Para apuntar a tu base en Clever Cloud:
+
+1) Desde el panel de Clever Cloud, abrí el add-on MySQL y copiá la cadena de conexión (host, puerto, base, usuario, contraseña). Suele ser similar a:
+
+```
+Server=your-mysql-host.clever-cloud.com;Port=3306;Database=your_db;User=your_user;Password=your_password;SslMode=Required;TreatTinyAsBoolean=false
+```
+
+2) NO edites `appsettings.json` en producción. Sobrescribí la cadena por variable de entorno `ConnectionStrings__DefaultConnection` (doble guion bajo):
+
+En local (temporal):
+
+```cmd
+setx ConnectionStrings__DefaultConnection "Server=...;Port=3306;Database=...;User=...;Password=...;SslMode=Required;TreatTinyAsBoolean=false"
+```
+
+En Azure App Service: Configurá en Configuration > Connection strings con nombre `DefaultConnection` y tipo `Custom` (o `MySQL`).
+
+En Clever Cloud: Variables de entorno de la app, agregá `ConnectionStrings__DefaultConnection` con el valor completo.
+
+3) Migraciones: el proyecto aplica migraciones automáticamente al iniciar (Database.Migrate). Si preferís aplicarlas manualmente:
+
+```cmd
+cd Backend\Backend
+dotnet tool install --global dotnet-ef
+dotnet ef database update --connection "Server=...;Port=3306;Database=...;User=...;Password=...;SslMode=Required;TreatTinyAsBoolean=false"
+```
+
+4) Probar local apuntando a la BD remota:
+
+```cmd
+cd Backend\Backend
+dotnet run --urls "http://localhost:7150"
+```
+
+Si la variable está configurada, la API usará esa conexión (revisá logs de inicio).
+
 ## Ejecutar el Frontend (Angular)
 
 1) En otra terminal:
@@ -45,6 +84,16 @@ npm start
 ```
 
 2) Abrir la app: http://localhost:4200/
+
+### Frontend contra backend en la nube
+
+El frontend NO se conecta directo a la base; sólo llama a la API. Cuando subas la API a Azure (o donde la publiques), actualizá `Frontend/src/environments/environment.prod.ts` para que `apiUrl` apunte a tu dominio público, por ejemplo:
+
+```
+apiUrl: 'https://tu-api.azurewebsites.net/api/Product'
+```
+
+Luego construí y desplegá el frontend.
 
 ## Cómo ejecutar tests localmente
 

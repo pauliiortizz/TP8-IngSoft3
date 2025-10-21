@@ -1,9 +1,7 @@
-using EmployeeCrudApi.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration;
-using MySqlConnector; // <-- agregá esto arriba del archivo si no lo tenés
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure; 
+using Microsoft.Extensions.DependencyInjection;
+using Backend.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +13,9 @@ builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
            .AllowAnyHeader();
 }));
 
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 36)) // o la versión exacta que uses
-    ));
+builder.Services.AddSingleton<Backend.Services.MongoDbService>();
+builder.Services.AddSingleton<Backend.Services.CounterService>();
+builder.Services.AddScoped<IProductRepository, Backend.Repositories.MongoProductRepository>();
 
 
 builder.Services.AddControllers();
@@ -55,5 +50,7 @@ app.MapGet("/admin", context =>
     context.Response.Redirect("/admin/index.html");
     return Task.CompletedTask;
 });
+
+// No EF Core migrations; persistencia via MongoDB
 
 app.Run();

@@ -1,10 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace EmployeeCrudApi.Models
 {
     public class Product
     {
+        // Usaremos este Id como clave primaria en Mongo (_id)
+        [BsonId]
         public int Id { get; set; }
 
         [Required]

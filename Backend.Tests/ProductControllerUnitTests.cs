@@ -1,36 +1,64 @@
 using EmployeeCrudApi.Controllers;
-using EmployeeCrudApi.Data;
 using EmployeeCrudApi.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
+using Backend.Repositories;
 
 namespace EmployeeCrudApi.Tests
 {
     public class ProductControllerUnitTests
     {
-        private ApplicationDbContext CreateInMemoryDb(string dbName)
+        private class FakeProductRepository : IProductRepository
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(dbName)
-                .Options;
-            return new ApplicationDbContext(options);
+            private readonly List<Product> _items = new();
+
+            public FakeProductRepository(IEnumerable<Product> seed = null)
+            {
+                if (seed != null) _items.AddRange(seed);
+            }
+
+            public Task<Product> CreateAsync(Product product)
+            {
+                if (product.Id == 0)
+                {
+                    product.Id = _items.Any() ? _items.Max(x => x.Id) + 1 : 1;
+                }
+                _items.Add(product);
+                return Task.FromResult(product);
+            }
+
+            public Task<bool> DeleteAsync(int id)
+            {
+                var idx = _items.FindIndex(x => x.Id == id);
+                if (idx >= 0) { _items.RemoveAt(idx); return Task.FromResult(true); }
+                return Task.FromResult(false);
+            }
+
+            public Task<List<Product>> GetAllAsync() => Task.FromResult(_items.ToList());
+
+            public Task<Product> GetByIdAsync(int id) => Task.FromResult(_items.FirstOrDefault(x => x.Id == id));
+
+            public Task<Product> UpdateAsync(Product product)
+            {
+                var idx = _items.FindIndex(x => x.Id == product.Id);
+                if (idx < 0) return Task.FromResult<Product>(null);
+                _items[idx] = product;
+                return Task.FromResult(product);
+            }
         }
 
         [Fact]
         public async Task SetStock_Valid_UpdatesStock()
         {
-            var db = CreateInMemoryDb("SetStock_Valid");
-            db.Products.Add(new Product { Id = 1, Name = "P1", Stock = 0 });
-            db.SaveChanges();
-
+            var repo = new FakeProductRepository(new[] { new Product { Id = 1, Name = "P1", Stock = 0 } });
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
             var result = await controller.SetStock(1, new ProductController.StockDto { Amount = 5 });
             var ok = Assert.IsType<OkObjectResult>(result);
             var prod = Assert.IsType<Product>(ok.Value);
@@ -40,12 +68,9 @@ namespace EmployeeCrudApi.Tests
         [Fact]
         public async Task SetStock_InvalidRange_ReturnsBadRequest()
         {
-            var db = CreateInMemoryDb("SetStock_InvalidRange");
-            db.Products.Add(new Product { Id = 2, Name = "P2", Stock = 0 });
-            db.SaveChanges();
-
+            var repo = new FakeProductRepository(new[] { new Product { Id = 2, Name = "P2", Stock = 0 } });
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
             var result = await controller.SetStock(2, new ProductController.StockDto { Amount = 500 });
             Assert.IsType<BadRequestObjectResult>(result);
         }
@@ -53,12 +78,9 @@ namespace EmployeeCrudApi.Tests
         [Fact]
         public async Task IncrementStock_Valid_Increments()
         {
-            var db = CreateInMemoryDb("Inc_Valid");
-            db.Products.Add(new Product { Id = 3, Name = "P3", Stock = 2 });
-            db.SaveChanges();
-
+            var repo = new FakeProductRepository(new[] { new Product { Id = 3, Name = "P3", Stock = 2 } });
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
             var result = await controller.IncrementStock(3, new ProductController.StockDto { Amount = 3 });
             var ok = Assert.IsType<OkObjectResult>(result);
             var prod = Assert.IsType<Product>(ok.Value);
@@ -68,12 +90,9 @@ namespace EmployeeCrudApi.Tests
         [Fact]
         public async Task DecrementStock_Valid_Decrements()
         {
-            var db = CreateInMemoryDb("Dec_Valid");
-            db.Products.Add(new Product { Id = 4, Name = "P4", Stock = 10 });
-            db.SaveChanges();
-
+            var repo = new FakeProductRepository(new[] { new Product { Id = 4, Name = "P4", Stock = 10 } });
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
             var result = await controller.DecrementStock(4, new ProductController.StockDto { Amount = 3 });
             var ok = Assert.IsType<OkObjectResult>(result);
             var prod = Assert.IsType<Product>(ok.Value);
@@ -83,12 +102,9 @@ namespace EmployeeCrudApi.Tests
         [Fact]
         public async Task IncrementStock_TooHigh_ReturnsBadRequest()
         {
-            var db = CreateInMemoryDb("Inc_TooHigh");
-            db.Products.Add(new Product { Id = 5, Name = "P5", Stock = 99 });
-            db.SaveChanges();
-
+            var repo = new FakeProductRepository(new[] { new Product { Id = 5, Name = "P5", Stock = 99 } });
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
             var result = await controller.IncrementStock(5, new ProductController.StockDto { Amount = 5 });
             Assert.IsType<BadRequestObjectResult>(result);
         }
@@ -96,9 +112,9 @@ namespace EmployeeCrudApi.Tests
         [Fact]
         public async Task Create_InvalidModel_ReturnsBadRequest()
         {
-            var db = CreateInMemoryDb("InvalidModel");
+            var repo = new FakeProductRepository();
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
             controller.ModelState.AddModelError("Name", "Required");
 
             var result = await controller.Create(new Product { Id = 10, Name = "" });
@@ -108,12 +124,9 @@ namespace EmployeeCrudApi.Tests
         [Fact]
         public async Task Create_DuplicateName_LogsWarning_WithMoq()
         {
-            var db = CreateInMemoryDb("Dup_Log");
-            db.Products.Add(new Product { Id = 1, Name = "Juan Perez" });
-            db.SaveChanges();
-
+            var repo = new FakeProductRepository(new[] { new Product { Id = 1, Name = "Juan Perez" } });
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
 
             var result = await controller.Create(new Product { Id = 2, Name = "Juan PEREZ" });
             Assert.IsType<BadRequestObjectResult>(result);
@@ -127,40 +140,14 @@ namespace EmployeeCrudApi.Tests
             ), Times.AtLeastOnce());
         }
 
-        private class ThrowingDbContext : ApplicationDbContext
-        {
-            public ThrowingDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-            public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-            {
-                throw new InvalidOperationException("DB error");
-            }
-        }
-
-        [Fact]
-        public async Task Create_WhenSaveThrows_PropagatesException()
-        {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase("ThrowingDB")
-                .Options;
-            var db = new ThrowingDbContext(options);
-
-            var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
-
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            {
-                await controller.Create(new Product { Id = 9, Name = "John DOE" });
-            });
-        }
+        // The following EF-specific test is removed since controller no longer depends on EF directly.
 
         [Fact]
         public async Task SetStock_NullDto_ReturnsBadRequest()
         {
-            var db = CreateInMemoryDb("NullDto");
-            db.Products.Add(new Product { Id = 30, Name = "P30", Stock = 1 });
-            db.SaveChanges();
+            var repo = new FakeProductRepository(new[] { new Product { Id = 30, Name = "P30", Stock = 1 } });
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
 
             var result = await controller.SetStock(30, null!);
             Assert.IsType<BadRequestObjectResult>(result);
@@ -169,9 +156,9 @@ namespace EmployeeCrudApi.Tests
         [Fact]
         public async Task Update_NotFound_ReturnsNotFound()
         {
-            var db = CreateInMemoryDb("Update_NotFound");
+            var repo = new FakeProductRepository();
             var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(db, logger.Object);
+            var controller = new ProductController(repo, logger.Object);
 
             var result = await controller.Update(new Product { Id = 999, Name = "X" });
             Assert.IsType<NotFoundResult>(result);
