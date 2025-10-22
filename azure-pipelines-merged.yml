@@ -119,6 +119,12 @@ stages:
               - download: current
                 artifact: drop
 
+              - script: |
+                  echo Checking Azure CLI visibility...
+                  where az
+                  az version
+                displayName: "Verify Azure CLI availability"
+
               - task: AzureCLI@2
                 displayName: "Set App Settings QA"
                 inputs:
