@@ -119,20 +119,17 @@ stages:
               - download: current
                 artifact: drop
 
-              - task: AzureCLI@2
+              - task: PowerShell@2
                 displayName: "Set App Settings QA"
                 inputs:
-                  azureSubscription: "azure-connection-tp06"
-                  scriptType: ps
-                  scriptLocation: inlineScript
-                  inlineScript: |
-                    az webapp config appsettings set `
+                  targetType: inline
+                  script: |
+                    Write-Host "Setting app settings for QA..."
+                    & "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set `
                       --name $(WEBAPP_QA) `
                       --resource-group $(RG_QA) `
                       --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" `
                                 ASPNETCORE_ENVIRONMENT="QA"
-
-
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend QA"
@@ -189,18 +186,17 @@ stages:
               - download: current
                 artifact: drop
 
-              - task: AzureCLI@2
+              - task: PowerShell@2
                 displayName: "Set App Settings PROD"
                 inputs:
-                  azureSubscription: "azure-connection-tp06"
-                  scriptType: ps
-                  scriptLocation: inlineScript
-                  inlineScript: |
-                    az webapp config appsettings set `
+                  targetType: inline
+                  script: |
+                    Write-Host "Setting app settings for PROD..."
+                    & "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set `
                       --name $(WEBAPP_PROD) `
                       --resource-group $(RG_PROD) `
                       --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" `
-                                 ASPNETCORE_ENVIRONMENT="Production"
+                                ASPNETCORE_ENVIRONMENT="Production"
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend PROD"
