@@ -40,7 +40,7 @@ stages:
           displayName: "Build .NET Project"
 
         - script: >
-            dotnet test Backend.Tests/Backend.Tests.csproj
+            dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj
             --logger "trx;LogFileName=dotnet-tests.trx"
             --results-directory "$(Build.SourcesDirectory)/test-results"
           displayName: "Run .NET Unit Tests"

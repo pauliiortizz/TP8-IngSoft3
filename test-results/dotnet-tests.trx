@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="7dfc3345-0c29-42ac-ab20-7778701cbf9a" name="BANGHO@PAU 2025-10-22 14:57:09" runUser="PAU\BANGHO" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-10-22T14:57:09.0738630-03:00" queuing="2025-10-22T14:57:09.0738633-03:00" start="2025-10-22T14:57:06.6959213-03:00" finish="2025-10-22T14:57:09.0971964-03:00" />
+  <TestSettings name="default" id="d888aec4-d922-422d-9ae6-1980233656cb">
+    <Deployment runDeploymentRoot="BANGHO_PAU_2025-10-22_14_57_09" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="3bc33b43-7b2e-4db8-bbe0-98797d7fff72" testId="31dca4b1-b1d6-c4f9-715c-d53b65cb0a6a" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.IncrementStock_Valid_Increments" computerName="PAU" duration="00:00:00.0004221" startTime="2025-10-22T14:57:09.0397402-03:00" endTime="2025-10-22T14:57:09.0397403-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3bc33b43-7b2e-4db8-bbe0-98797d7fff72" />
+    <UnitTestResult executionId="0b5ceb3d-d4ec-4b28-a367-2026828839ff" testId="f1d45c17-5b32-3a62-b367-83f43cf6a0cb" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.IncrementStock_TooHigh_ReturnsBadRequest" computerName="PAU" duration="00:00:00.5143865" startTime="2025-10-22T14:57:08.9896050-03:00" endTime="2025-10-22T14:57:08.9896053-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0b5ceb3d-d4ec-4b28-a367-2026828839ff" />
+    <UnitTestResult executionId="742cd50c-0883-492f-8420-e607c4244098" testId="0892153d-6f4c-f2b6-d5d6-08ff6b247faf" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.Update_NotFound_ReturnsNotFound" computerName="PAU" duration="00:00:00.0003651" startTime="2025-10-22T14:57:09.0397697-03:00" endTime="2025-10-22T14:57:09.0397697-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="742cd50c-0883-492f-8420-e607c4244098" />
+    <UnitTestResult executionId="fbbfa93e-009d-4f77-b77a-96c2fc61074c" testId="b2402899-5e68-a027-8374-ae19fc46cd60" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.SetStock_NullDto_ReturnsBadRequest" computerName="PAU" duration="00:00:00.0003561" startTime="2025-10-22T14:57:09.0397962-03:00" endTime="2025-10-22T14:57:09.0397962-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fbbfa93e-009d-4f77-b77a-96c2fc61074c" />
+    <UnitTestResult executionId="2e610568-dbcf-4f39-8b9e-16cf193520a3" testId="a0513a1e-634a-f278-fb95-d6436a291aa2" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.GetAll_ReturnsListOfEmployees" computerName="PAU" duration="00:00:00.5058785" startTime="2025-10-22T14:57:08.9835040-03:00" endTime="2025-10-22T14:57:08.9835198-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2e610568-dbcf-4f39-8b9e-16cf193520a3" />
+    <UnitTestResult executionId="25a31914-7a01-4bbd-997b-d874879c9c35" testId="465ffcaf-fea9-5eaa-28f7-cdeac304744b" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.SetStock_Valid_UpdatesStock" computerName="PAU" duration="00:00:00.0012336" startTime="2025-10-22T14:57:08.9909997-03:00" endTime="2025-10-22T14:57:08.9909999-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="25a31914-7a01-4bbd-997b-d874879c9c35" />
+    <UnitTestResult executionId="a254de8d-6b54-4993-ad31-f6be809605cb" testId="95dd56ba-8759-b352-1178-2c55d41c1247" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Rejects_DuplicateName" computerName="PAU" duration="00:00:00.0031959" startTime="2025-10-22T14:57:09.0070116-03:00" endTime="2025-10-22T14:57:09.0070119-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a254de8d-6b54-4993-ad31-f6be809605cb" />
+    <UnitTestResult executionId="8a739d8d-c423-4bf4-9c64-ec09946e6a20" testId="28d29dac-0e39-e823-bac8-7a138f53f160" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Delete_RemovesEmployee" computerName="PAU" duration="00:00:00.0025178" startTime="2025-10-22T14:57:09.0396394-03:00" endTime="2025-10-22T14:57:09.0396395-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8a739d8d-c423-4bf4-9c64-ec09946e6a20" />
+    <UnitTestResult executionId="80491f20-c6f1-448f-85fb-be6f10bf691a" testId="05198ea8-cebb-06cd-d3f7-f987f4d3f3e3" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.SetStock_InvalidRange_ReturnsBadRequest" computerName="PAU" duration="00:00:00.0004883" startTime="2025-10-22T14:57:09.0397140-03:00" endTime="2025-10-22T14:57:09.0397140-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="80491f20-c6f1-448f-85fb-be6f10bf691a" />
+    <UnitTestResult executionId="2e2ba0b8-f518-49e4-b395-d95fee5d0cac" testId="a6a07042-e575-2b9f-c572-222eb536452d" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Delete_NotFound_ReturnsNotFound" computerName="PAU" duration="00:00:00.0011149" startTime="2025-10-22T14:57:09.0396085-03:00" endTime="2025-10-22T14:57:09.0396086-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2e2ba0b8-f518-49e4-b395-d95fee5d0cac" />
+    <UnitTestResult executionId="a4787556-05f0-400a-ba03-3be5819d075c" testId="7fc83deb-c4d1-0cc3-aefa-99ff0692e2d6" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.DecrementStock_Valid_Decrements" computerName="PAU" duration="00:00:00.0008992" startTime="2025-10-22T14:57:09.0398231-03:00" endTime="2025-10-22T14:57:09.0398231-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a4787556-05f0-400a-ba03-3be5819d075c" />
+    <UnitTestResult executionId="85e95f5c-d19c-466c-a977-228cb1a22065" testId="18e88351-b0e2-996a-d6a5-d60c258f8983" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Rejects_Names_With_Digits" computerName="PAU" duration="00:00:00.0004580" startTime="2025-10-22T14:57:09.0075561-03:00" endTime="2025-10-22T14:57:09.0075562-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="85e95f5c-d19c-466c-a977-228cb1a22065" />
+    <UnitTestResult executionId="fb8d9671-efc9-4ac7-bba7-638d1c5bd980" testId="6be3f5ab-0c6e-1dc9-16f6-b67cca12330f" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_AddsEmployee" computerName="PAU" duration="00:00:00.0005458" startTime="2025-10-22T14:57:09.0395761-03:00" endTime="2025-10-22T14:57:09.0395762-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fb8d9671-efc9-4ac7-bba7-638d1c5bd980" />
+    <UnitTestResult executionId="25c92917-f629-4e8b-a901-d143c6a8c856" testId="668d3f3b-0f94-cb43-d953-afd19397e57b" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Formats_Name_As_GivenAndUppercaseSurname" computerName="PAU" duration="00:00:00.0206411" startTime="2025-10-22T14:57:09.0036870-03:00" endTime="2025-10-22T14:57:09.0036873-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="25c92917-f629-4e8b-a901-d143c6a8c856" />
+    <UnitTestResult executionId="fe220d0b-ba6d-415d-8112-a10dc9bd6bb7" testId="e5d57d2a-5d83-9d90-84c0-e8227dd95924" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.Create_DuplicateName_LogsWarning_WithMoq" computerName="PAU" duration="00:00:00.0206391" startTime="2025-10-22T14:57:09.0396876-03:00" endTime="2025-10-22T14:57:09.0396876-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fe220d0b-ba6d-415d-8112-a10dc9bd6bb7" />
+    <UnitTestResult executionId="0ef4e896-eaab-4343-a5bb-618862ce0e24" testId="537edf5e-4484-db08-d500-306d2a990185" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Rejects_Excessive_Repeats" computerName="PAU" duration="00:00:00.0003547" startTime="2025-10-22T14:57:09.0079068-03:00" endTime="2025-10-22T14:57:09.0079080-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0ef4e896-eaab-4343-a5bb-618862ce0e24" />
+    <UnitTestResult executionId="7b518013-8c13-4eb9-a2df-647ea3396ac3" testId="abd5dd92-c243-edd2-8f8b-c0cbaef9ea92" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.Update_UpdatesEmployee" computerName="PAU" duration="00:00:00.0018614" startTime="2025-10-22T14:57:09.0383445-03:00" endTime="2025-10-22T14:57:09.0383445-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7b518013-8c13-4eb9-a2df-647ea3396ac3" />
+    <UnitTestResult executionId="16d00996-0abc-4e75-b46f-4a43591d04ae" testId="5e4d9af4-ef04-b6cd-537f-316bd2841409" testName="EmployeeCrudApi.Tests.ProductControllerUnitTests.Create_InvalidModel_ReturnsBadRequest" computerName="PAU" duration="00:00:00.0183395" startTime="2025-10-22T14:57:09.0381956-03:00" endTime="2025-10-22T14:57:09.0381957-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="16d00996-0abc-4e75-b46f-4a43591d04ae" />
+    <UnitTestResult executionId="76013708-da7a-4f0c-aea0-ab452d5b3a2a" testId="a2ac9c63-f211-a5c4-edc1-1df5995f60ca" testName="EmployeeCrudApi.Tests.EmployeeControllerTests.GetById_ReturnsEmployeeById" computerName="PAU" duration="00:00:00.0008214" startTime="2025-10-22T14:57:09.0087863-03:00" endTime="2025-10-22T14:57:09.0087864-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="76013708-da7a-4f0c-aea0-ab452d5b3a2a" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Rejects_Excessive_Repeats" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="537edf5e-4484-db08-d500-306d2a990185">
+      <Execution id="0ef4e896-eaab-4343-a5bb-618862ce0e24" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Create_Rejects_Excessive_Repeats" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.SetStock_InvalidRange_ReturnsBadRequest" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="05198ea8-cebb-06cd-d3f7-f987f4d3f3e3">
+      <Execution id="80491f20-c6f1-448f-85fb-be6f10bf691a" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="SetStock_InvalidRange_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.SetStock_NullDto_ReturnsBadRequest" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="b2402899-5e68-a027-8374-ae19fc46cd60">
+      <Execution id="fbbfa93e-009d-4f77-b77a-96c2fc61074c" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="SetStock_NullDto_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_AddsEmployee" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="6be3f5ab-0c6e-1dc9-16f6-b67cca12330f">
+      <Execution id="fb8d9671-efc9-4ac7-bba7-638d1c5bd980" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Create_AddsEmployee" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Rejects_Names_With_Digits" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="18e88351-b0e2-996a-d6a5-d60c258f8983">
+      <Execution id="85e95f5c-d19c-466c-a977-228cb1a22065" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Create_Rejects_Names_With_Digits" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.SetStock_Valid_UpdatesStock" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="465ffcaf-fea9-5eaa-28f7-cdeac304744b">
+      <Execution id="25a31914-7a01-4bbd-997b-d874879c9c35" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="SetStock_Valid_UpdatesStock" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Formats_Name_As_GivenAndUppercaseSurname" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="668d3f3b-0f94-cb43-d953-afd19397e57b">
+      <Execution id="25c92917-f629-4e8b-a901-d143c6a8c856" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Create_Formats_Name_As_GivenAndUppercaseSurname" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Create_Rejects_DuplicateName" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="95dd56ba-8759-b352-1178-2c55d41c1247">
+      <Execution id="a254de8d-6b54-4993-ad31-f6be809605cb" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Create_Rejects_DuplicateName" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.IncrementStock_TooHigh_ReturnsBadRequest" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="f1d45c17-5b32-3a62-b367-83f43cf6a0cb">
+      <Execution id="0b5ceb3d-d4ec-4b28-a367-2026828839ff" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="IncrementStock_TooHigh_ReturnsBadRequest" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.Update_NotFound_ReturnsNotFound" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="0892153d-6f4c-f2b6-d5d6-08ff6b247faf">
+      <Execution id="742cd50c-0883-492f-8420-e607c4244098" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="Update_NotFound_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.IncrementStock_Valid_Increments" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="31dca4b1-b1d6-c4f9-715c-d53b65cb0a6a">
+      <Execution id="3bc33b43-7b2e-4db8-bbe0-98797d7fff72" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="IncrementStock_Valid_Increments" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Delete_RemovesEmployee" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="28d29dac-0e39-e823-bac8-7a138f53f160">
+      <Execution id="8a739d8d-c423-4bf4-9c64-ec09946e6a20" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Delete_RemovesEmployee" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.DecrementStock_Valid_Decrements" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="7fc83deb-c4d1-0cc3-aefa-99ff0692e2d6">
+      <Execution id="a4787556-05f0-400a-ba03-3be5819d075c" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="DecrementStock_Valid_Decrements" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Delete_NotFound_ReturnsNotFound" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="a6a07042-e575-2b9f-c572-222eb536452d">
+      <Execution id="2e2ba0b8-f518-49e4-b395-d95fee5d0cac" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Delete_NotFound_ReturnsNotFound" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.GetAll_ReturnsListOfEmployees" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="a0513a1e-634a-f278-fb95-d6436a291aa2">
+      <Execution id="2e610568-dbcf-4f39-8b9e-16cf193520a3" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="GetAll_ReturnsListOfEmployees" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.Create_DuplicateName_LogsWarning_WithMoq" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="e5d57d2a-5d83-9d90-84c0-e8227dd95924">
+      <Execution id="fe220d0b-ba6d-415d-8112-a10dc9bd6bb7" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="Create_DuplicateName_LogsWarning_WithMoq" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.GetById_ReturnsEmployeeById" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="a2ac9c63-f211-a5c4-edc1-1df5995f60ca">
+      <Execution id="76013708-da7a-4f0c-aea0-ab452d5b3a2a" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="GetById_ReturnsEmployeeById" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.EmployeeControllerTests.Update_UpdatesEmployee" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="abd5dd92-c243-edd2-8f8b-c0cbaef9ea92">
+      <Execution id="7b518013-8c13-4eb9-a2df-647ea3396ac3" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.EmployeeControllerTests" name="Update_UpdatesEmployee" />
+    </UnitTest>
+    <UnitTest name="EmployeeCrudApi.Tests.ProductControllerUnitTests.Create_InvalidModel_ReturnsBadRequest" storage="c:\users\bangho\tp6\backend.tests\bin\debug\net8.0\employeecrudapi.tests.dll" id="5e4d9af4-ef04-b6cd-537f-316bd2841409">
+      <Execution id="16d00996-0abc-4e75-b46f-4a43591d04ae" />
+      <TestMethod codeBase="C:\Users\BANGHO\TP6\Backend.Tests\bin\Debug\net8.0\EmployeeCrudApi.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="EmployeeCrudApi.Tests.ProductControllerUnitTests" name="Create_InvalidModel_ReturnsBadRequest" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="31dca4b1-b1d6-c4f9-715c-d53b65cb0a6a" executionId="3bc33b43-7b2e-4db8-bbe0-98797d7fff72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f1d45c17-5b32-3a62-b367-83f43cf6a0cb" executionId="0b5ceb3d-d4ec-4b28-a367-2026828839ff" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0892153d-6f4c-f2b6-d5d6-08ff6b247faf" executionId="742cd50c-0883-492f-8420-e607c4244098" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b2402899-5e68-a027-8374-ae19fc46cd60" executionId="fbbfa93e-009d-4f77-b77a-96c2fc61074c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a0513a1e-634a-f278-fb95-d6436a291aa2" executionId="2e610568-dbcf-4f39-8b9e-16cf193520a3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="465ffcaf-fea9-5eaa-28f7-cdeac304744b" executionId="25a31914-7a01-4bbd-997b-d874879c9c35" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="95dd56ba-8759-b352-1178-2c55d41c1247" executionId="a254de8d-6b54-4993-ad31-f6be809605cb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="28d29dac-0e39-e823-bac8-7a138f53f160" executionId="8a739d8d-c423-4bf4-9c64-ec09946e6a20" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="05198ea8-cebb-06cd-d3f7-f987f4d3f3e3" executionId="80491f20-c6f1-448f-85fb-be6f10bf691a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a6a07042-e575-2b9f-c572-222eb536452d" executionId="2e2ba0b8-f518-49e4-b395-d95fee5d0cac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7fc83deb-c4d1-0cc3-aefa-99ff0692e2d6" executionId="a4787556-05f0-400a-ba03-3be5819d075c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="18e88351-b0e2-996a-d6a5-d60c258f8983" executionId="85e95f5c-d19c-466c-a977-228cb1a22065" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6be3f5ab-0c6e-1dc9-16f6-b67cca12330f" executionId="fb8d9671-efc9-4ac7-bba7-638d1c5bd980" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="668d3f3b-0f94-cb43-d953-afd19397e57b" executionId="25c92917-f629-4e8b-a901-d143c6a8c856" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e5d57d2a-5d83-9d90-84c0-e8227dd95924" executionId="fe220d0b-ba6d-415d-8112-a10dc9bd6bb7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="537edf5e-4484-db08-d500-306d2a990185" executionId="0ef4e896-eaab-4343-a5bb-618862ce0e24" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="abd5dd92-c243-edd2-8f8b-c0cbaef9ea92" executionId="7b518013-8c13-4eb9-a2df-647ea3396ac3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5e4d9af4-ef04-b6cd-537f-316bd2841409" executionId="16d00996-0abc-4e75-b46f-4a43591d04ae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a2ac9c63-f211-a5c4-edc1-1df5995f60ca" executionId="76013708-da7a-4f0c-aea0-ab452d5b3a2a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Resultados sin formato de lista" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="Todos los resultados cargados" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="19" executed="19" passed="19" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.20)&#xD;
+[xUnit.net 00:00:00.72]   Discovering: EmployeeCrudApi.Tests&#xD;
+[xUnit.net 00:00:00.75]   Discovered:  EmployeeCrudApi.Tests&#xD;
+[xUnit.net 00:00:00.75]   Starting:    EmployeeCrudApi.Tests&#xD;
+[xUnit.net 00:00:01.35]   Finished:    EmployeeCrudApi.Tests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
