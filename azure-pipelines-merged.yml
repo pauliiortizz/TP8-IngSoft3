@@ -121,7 +121,7 @@ stages:
 
               - script: |
                   echo Checking Azure CLI visibility...
-                  where az
+                  Get-Command az
                   az version
                 displayName: "Verify Azure CLI availability"
 
