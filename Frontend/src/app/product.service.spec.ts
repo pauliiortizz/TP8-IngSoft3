@@ -30,8 +30,8 @@ describe('EmployeeService', () => {
 
 
   it('should retrieve all employees', () => {
-    const today = new Date();
-    const expectedDateTime = datePipe.transform(today, 'dd/MM/yyyy HH:mm:ss', undefined) ?? '';  // Consistente con el servicio
+  const today = new Date();
+  const expectedDateTime = datePipe.transform(today, 'dd/MM/yyyy HH:mm:ss', undefined) ?? '';
 
     const dummyEmployees: Employee[] = [
       new Employee(1, 'John Doe', expectedDateTime),
@@ -41,11 +41,10 @@ describe('EmployeeService', () => {
     service.getAllEmployee().subscribe(employees => {
       expect(employees.length).toBe(2);
       employees.forEach((employee, index) => {
-        // Agrega depuración aquí
-        console.log('Employee createdDate:', datePipe.transform(employee.createdDate, 'dd/MM/yyyy HH:mm:ss', undefined)?? '');  // Imprimir el valor generado por el servicio
-        console.log('Dummy employee createdDate:', datePipe.transform(dummyEmployees[index].createdDate, 'MM/dd/yyyy HH:mm:ss', undefined)?? '');   // Imprimir el valor esperado
+        console.log('Employee createdDate:', employee.createdDate ?? '');
+        console.log('Dummy employee createdDate:', dummyEmployees[index].createdDate ?? '');
 
-        expect(datePipe.transform(employee.createdDate, 'dd/MM/yyyy HH:mm:ss', undefined)?? '').toEqual(datePipe.transform(dummyEmployees[index].createdDate, 'MM/dd/yyyy HH:mm:ss', undefined)?? '');  // Compara la fecha completa
+        expect(employee.createdDate).toEqual(expectedDateTime);
       });
     });
 

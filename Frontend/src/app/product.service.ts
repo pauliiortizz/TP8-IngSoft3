@@ -15,6 +15,39 @@ export class EmployeeService {
 
   constructor(private http: HttpClient, private datepipe: DatePipe) {}
 
+  private parseToDate(value: string | Date | undefined): Date | null {
+    if (!value) {
+      return null;
+    }
+
+    if (value instanceof Date) {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const parsed = Date.parse(value);
+      if (!Number.isNaN(parsed)) {
+        return new Date(parsed);
+      }
+
+  // Manually parse dd/MM/yyyy HH:mm:ss since Date.parse assumes mm/dd ordering
+  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/);
+      if (match) {
+        const [, day, month, year, hour = '00', minute = '00', second = '00'] = match;
+        return new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          Number(hour),
+          Number(minute),
+          Number(second)
+        );
+      }
+    }
+
+    return null;
+  }
+
   getAllEmployee(): Observable<Product[]> {
     return this.http
       .get<Product[]>(this.apiUrlEmployee)
@@ -25,14 +58,22 @@ export class EmployeeService {
               new Product(
                 item.id,
                 item.name,
-                this.datepipe
-                  .transform(item.createdDate, 'dd/MM/yyyy HH:mm:ss',undefined)
-                  ?.toString()
-                , item.stock ?? 0
+                this.formatCreatedDate(item.createdDate),
+                item.stock ?? 0
               )
           )
         )
       );
+  }
+
+  private formatCreatedDate(value: string | Date | undefined): string | undefined {
+    const parsedDate = this.parseToDate(value);
+    if (parsedDate) {
+      return this.datepipe
+        .transform(parsedDate, 'dd/MM/yyyy HH:mm:ss', undefined)
+        ?.toString();
+    }
+    return value?.toString();
   }
 
 
