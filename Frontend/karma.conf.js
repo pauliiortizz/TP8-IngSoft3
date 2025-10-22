@@ -27,25 +27,25 @@ module.exports = function (config) {
     autoWatch: false,
 
    browsers: ['ChromeHeadlessNoSandbox'],
-    customLaunchers: {
-      ChromeHeadlessNoSandbox: {
-        base: 'ChromeHeadless',
-        flags: [
-          '--headless=new',
-          '--no-sandbox',
-          '--disable-gpu',
-          '--disable-dev-shm-usage',
-          '--disable-setuid-sandbox',
-          '--disable-software-rasterizer',
-          '--remote-debugging-port=9222',
-          '--window-size=1920,1080'
-        ]
-      }
-    },
-    captureTimeout: 240000,
-    browserDisconnectTimeout: 240000,
-    browserNoActivityTimeout: 240000,
-
+customLaunchers: {
+  ChromeHeadlessNoSandbox: {
+    base: 'ChromeHeadless',
+    flags: [
+      '--headless=new',
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      '--disable-setuid-sandbox',
+      '--disable-software-rasterizer',
+      '--remote-debugging-port=9222',
+      '--window-size=1920,1080'
+    ]
+  }
+},
+captureTimeout: 300000,
+browserDisconnectTimeout: 300000,
+browserNoActivityTimeout: 300000,
+browserDisconnectTolerance: 5,
 
     singleRun: true,
     restartOnFileChange: false

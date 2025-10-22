@@ -88,12 +88,14 @@ stages:
             path: '$(Build.SourcesDirectory)/Frontend/.angular/cache'
 
         - script: |
-            echo "🚀 Running Angular tests (stabilized for Azure CI)..."
+            echo "🚀 Running Angular tests with stability tweaks..."
             npx ng test --browsers=ChromeHeadlessNoSandbox --watch=false --no-progress --code-coverage
           displayName: "Run Angular Tests (Headless CI)"
           workingDirectory: Frontend
           env:
             CHROME_BIN: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            CHROME_NO_SANDBOX: "true"
+
 
 
 
