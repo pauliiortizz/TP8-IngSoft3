@@ -104,9 +104,9 @@ stages:
   displayName: "Deploy to QA"
   dependsOn: BuildAndTest
   variables:
-    WEBAPP_QA: tp6-app-qa
-    RG_QA: $(RG_QA)
-    MONGO_CONNSTR_QA: $(MONGO_CONNSTR_QA)
+    WEBAPP_QA: ProductosWEB
+    # RG_QA: $(RG_QA)
+    # MONGO_CONNSTR_QA: $(MONGO_CONNSTR_QA)
   jobs:
     - deployment: DeployQA
       displayName: "Desplegar QA"
@@ -123,14 +123,15 @@ stages:
                 displayName: "Set App Settings QA"
                 inputs:
                   azureSubscription: "azure-connection-tp06"
-                  scriptType: bash
+                  scriptType: ps
                   scriptLocation: inlineScript
                   inlineScript: |
-                    az webapp config appsettings set \
-                      --name $(WEBAPP_QA) \
-                      --resource-group $(RG_QA) \
-                      --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" \
+                    az webapp config appsettings set `
+                      --name $(WEBAPP_QA) `
+                      --resource-group $(RG_QA) `
+                      --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" `
                                 ASPNETCORE_ENVIRONMENT="QA"
+
 
 
               - task: AzureWebApp@1
@@ -173,9 +174,9 @@ stages:
   displayName: "Deploy to Production"
   dependsOn: Approve_PROD
   variables:
-    WEBAPP_PROD: tp6-app-prod
-    RG_PROD: $(RG_PROD)
-    MONGO_CONNSTR_PROD: $(MONGO_CONNSTR_PROD)
+    WEBAPP_PROD: ProductosWEB-PROD
+    # RG_PROD: $(RG_PROD)
+    # MONGO_CONNSTR_PROD: $(MONGO_CONNSTR_PROD)
   jobs:
     - deployment: DeployPROD
       displayName: "Desplegar PROD"
