@@ -119,7 +119,7 @@ stages:
               - download: current
                 artifact: drop
 
-             - script: |
+              - script: |
                   echo Checking Azure CLI visibility...
                   where az
                   az version
