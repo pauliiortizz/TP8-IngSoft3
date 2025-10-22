@@ -119,25 +119,19 @@ stages:
               - download: current
                 artifact: drop
 
-              - script: |
-                  echo Checking Azure CLI visibility...
-                  where az
-                  az version
-                displayName: "Verify Azure CLI availability"
-                shell: cmd
-
               - task: AzureCLI@2
                 displayName: "Set App Settings QA"
                 inputs:
                   azureSubscription: "azure-connection-tp06"
-                  scriptType: ps
+                  scriptType: bash
                   scriptLocation: inlineScript
                   inlineScript: |
-                    az webapp config appsettings set `
-                      --name $(WEBAPP_QA) `
-                      --resource-group $(RG_QA) `
-                      --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" `
-                                 ASPNETCORE_ENVIRONMENT="QA"
+                    az webapp config appsettings set \
+                      --name $(WEBAPP_QA) \
+                      --resource-group $(RG_QA) \
+                      --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" \
+                                ASPNETCORE_ENVIRONMENT="QA"
+
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend QA"
