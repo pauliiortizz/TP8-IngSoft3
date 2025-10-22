@@ -26,24 +26,26 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: false,
 
-    browsers: ['ChromeHeadless'],
+   browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
-      ChromeHeadless: {
-        base: 'Chrome',
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
         flags: [
+          '--headless=new',
           '--no-sandbox',
           '--disable-gpu',
           '--disable-dev-shm-usage',
           '--disable-setuid-sandbox',
+          '--disable-software-rasterizer',
           '--remote-debugging-port=9222',
-          '--disable-software-rasterizer'
+          '--window-size=1920,1080'
         ]
       }
     },
+    captureTimeout: 240000,
+    browserDisconnectTimeout: 240000,
+    browserNoActivityTimeout: 240000,
 
-    captureTimeout: 180000,
-    browserDisconnectTimeout: 180000,
-    browserNoActivityTimeout: 180000,
 
     singleRun: true,
     restartOnFileChange: false
