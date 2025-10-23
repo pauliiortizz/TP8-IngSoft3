@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: ubuntu-latest
+  name: Pauli
 
 steps:
 - script: echo Hello, world!
@@ -20,9 +20,8 @@ steps:
 
 - script: |
     echo ===== AGENT ENVIRONMENT =====
-    echo Agent OS: $(Agent.OS)
-    echo Agent Name: $(Agent.Name)
-    echo Machine Name: %COMPUTERNAME%
-    echo Current Directory: %CD%
+    echo "Agent OS: $(Agent.OS)"
+    echo "Agent Name: $(Agent.Name)"
+    echo "Machine Name: $HOSTNAME"
+    echo "Current Directory: $(pwd)"
   displayName: "Show Agent Info"
-  shell: cmd
