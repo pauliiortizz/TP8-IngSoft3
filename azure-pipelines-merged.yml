@@ -104,7 +104,7 @@ stages:
   displayName: "Deploy to QA"
   dependsOn: BuildAndTest
   variables:
-    WEBAPP_QA: productosweb-fpcnfsbsg8gscbat.brazilsouth-01
+    WEBAPP_QA: ProductosWEB
   jobs:
     - deployment: DeployQA
       displayName: "Desplegar QA"
@@ -157,7 +157,7 @@ stages:
 - stage: Deploy_PROD
   displayName: "Deploy to Production"
   variables:
-    WEBAPP_PROD: productosweb-prod-gbfnaef6a3c7e3e7.brazilsouth-01
+    WEBAPP_PROD: ProductosWEB-PROD
   jobs:
     - deployment: DeployPROD
       displayName: "Desplegar PROD"
