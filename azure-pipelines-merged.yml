@@ -104,7 +104,7 @@ stages:
   displayName: "Deploy to QA"
   dependsOn: BuildAndTest
   variables:
-    WEBAPP_QA: ProductosWEB
+    WEBAPP_QA: productosweb-fpcnfsbsg8gscbat.brazilsouth-01
   jobs:
     - deployment: DeployQA
       displayName: "Desplegar QA"
@@ -136,31 +136,14 @@ stages:
                   appName: "$(WEBAPP_QA)"
                   package: "$(Pipeline.Workspace)/drop"
 
-              - script: |
-                  echo "🔍 Checking health of QA..."
-                  curl -f https://$(WEBAPP_QA).azurewebsites.net/health || exit 1
+              - task: InvokeRESTAPI@1
                 displayName: "Health Check QA"
-
-# =======================================
-# ✅ APPROVAL GATE
-# =======================================
-- stage: Approve_PROD
-  displayName: "Manual approval before Production"
-  dependsOn: Deploy_QA
-  jobs:
-    - job: WaitForApproval
-      displayName: "Esperar aprobación QA/Negocio"
-      pool: server
-      steps:
-        - task: ManualValidation@0
-          displayName: "Aprobación manual para desplegar a PROD"
-          timeoutInMinutes: 4320
-          inputs:
-            instructions: |
-              1. Validar el despliegue QA.
-              2. Confirmar que las pruebas funcionales pasaron.
-              3. Obtener el OK del profesor o del QA lead.
-            onTimeout: 'reject'
+                inputs:
+                  connectionType: 'connectedServiceName'
+                  serviceConnection: 'azure-connection-tp06'
+                  method: 'GET'
+                  urlSuffix: 'https://$(WEBAPP_QA).azurewebsites.net/health'
+                  successCriteria: 'eq(root["statusCode"],200)'
 
 # =======================================
 # 🚀 DEPLOY PROD
@@ -169,7 +152,7 @@ stages:
   displayName: "Deploy to Production"
   dependsOn: Approve_PROD
   variables:
-    WEBAPP_PROD: ProductosWEB-PROD
+    WEBAPP_PROD: productosweb-prod-gbfnaef6a3c7e3e7.brazilsouth-01
   jobs:
     - deployment: DeployPROD
       displayName: "Desplegar PROD"
