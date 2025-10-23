@@ -148,7 +148,7 @@ stages:
                   Write-Error "Health check failed: $_"
                   exit 1
                 }
-              displayName: "Health Check QA"
+                displayName: "Health Check QA"
 
 
 # =======================================
