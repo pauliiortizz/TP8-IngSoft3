@@ -78,27 +78,31 @@ stages:
             failTaskOnFailedTests: true
 
         # ---- Build Angular y copiar al backend ----
+        - task: Npm@1
+          displayName: 'npm ci (frontend)'
+          inputs:
+            command: 'ci'
+            workingDir: 'Frontend'
+
+        - task: Npm@1
+          displayName: 'npm run build (frontend)'
+          inputs:
+            command: 'custom'
+            workingDir: 'Frontend'
+            customCommand: 'run build -- --configuration production'
+
+        - task: CopyFiles@2
+          displayName: 'Copy frontend dist to backend wwwroot (flatten)'
+          inputs:
+            SourceFolder: 'Frontend/dist'
+            Contents: '**/*'
+            TargetFolder: 'Backend/Backend/wwwroot'
+            OverWrite: true
+            # Flattening handled by selecting files, CopyFiles@2 will copy file tree; if dist contains an extra folder (e.g. dist/browser), we'll copy its contents as well
+
         - script: |
-            echo "🏗️ Building Angular and copying to backend (flattening dist)..."
-            set -e
-            cd Frontend
-            npm ci
-            npm run build -- --configuration production
-            cd ..
-            mkdir -p Backend/Backend/wwwroot
-            echo "Contents of Frontend/dist:" && ls -la Frontend/dist || true
-            # Copy all files from any app folder inside dist into wwwroot (flatten)
-            # This handles cases where Angular outputs into dist/<appName>/
-            for d in Frontend/dist/*; do
-              if [ -d "$d" ]; then
-                echo "Copying from $d -> Backend/Backend/wwwroot/"
-                cp -r "$d"/* Backend/Backend/wwwroot/ || true
-              fi
-            done
-            # Fallback: if files are directly in Frontend/dist, copy them as well
-            cp -r Frontend/dist/* Backend/Backend/wwwroot/ || true
             echo "Final wwwroot listing:" && ls -la Backend/Backend/wwwroot || true
-          displayName: "Build Angular and copy to backend"
+          displayName: 'Show final wwwroot listing'
 
 
         # ---- Publish backend+frontend juntos ----
