@@ -1,3 +1,4 @@
+
 trigger:
   branches:
     include:
@@ -33,17 +34,25 @@ stages:
               packageType: sdk
               version: "8.0.x"
 
-          - script: dotnet restore Backend/ProductApi.sln
-            displayName: "Restore .NET Dependencies"
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore .NET Dependencies'
+            inputs:
+              command: 'restore'
+              projects: 'Backend/ProductApi.sln'
 
-          - script: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
-            displayName: "Build .NET Project"
+          - task: DotNetCoreCLI@2
+            displayName: 'Build .NET Project'
+            inputs:
+              command: 'build'
+              projects: 'Backend/ProductApi.sln'
+              arguments: '--configuration Release --no-restore'
 
-          - script: >
-              dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj
-              --logger "trx;LogFileName=dotnet-tests.trx"
-              --results-directory "$(Build.SourcesDirectory)/test-results"
-            displayName: "Run .NET Unit Tests"
+          - task: DotNetCoreCLI@2
+            displayName: 'Run .NET Unit Tests'
+            inputs:
+              command: 'test'
+              projects: 'Backend.Tests/EmployeeCrudApi.Tests.csproj'
+              arguments: '--logger "trx;LogFileName=dotnet-tests.trx" --results-directory "$(Build.SourcesDirectory)/test-results"'
 
           - task: PublishTestResults@2
             displayName: "Publish .NET Test Results"
@@ -59,15 +68,18 @@ stages:
             inputs:
               versionSpec: "20.x"
 
-          - script: npm ci
-            displayName: "Install Angular Dependencies"
-            workingDirectory: Frontend
+          - task: Npm@1
+            displayName: 'Install Angular Dependencies'
+            inputs:
+              command: 'ci'
+              workingDir: 'Frontend'
 
-          - script: |
-              echo "🚀 Running Angular Unit Tests..."
-              npx ng test --browsers=ChromeHeadless --watch=false --no-progress --code-coverage
-            displayName: "Run Angular Tests"
-            workingDirectory: Frontend
+          - task: Npm@1
+            displayName: 'Run Angular Tests'
+            inputs:
+              command: 'custom'
+              customCommand: 'run test -- --browsers=ChromeHeadless --watch=false --no-progress --code-coverage'
+              workingDir: 'Frontend'
 
           - task: PublishTestResults@2
             displayName: "Publish Angular Test Results"
@@ -77,40 +89,21 @@ stages:
               mergeTestResults: true
               failTaskOnFailedTests: true
 
-          # ---- Build Angular y copiar al backend (portable) ----
-          - script: |
-              echo "🏗️ Building Angular..."
-              npm ci
-              npm run build -- --configuration production
-            displayName: "Build Angular"
-            workingDirectory: Frontend
-
-          - task: CopyFiles@2
-            displayName: 'Copy Angular dist (candidate: browser) -> Backend/wwwroot'
+          # ---- Build Angular and write directly to backend wwwroot ----
+          - task: Npm@1
+            displayName: 'Build Angular (production) -> write to Backend/wwwroot'
             inputs:
-              SourceFolder: 'Frontend/dist/employee-crud-angular/browser'
-              Contents: '**'
-              TargetFolder: 'Backend/Backend/wwwroot'
-            continueOnError: true
-
-          - task: CopyFiles@2
-            displayName: 'Copy Angular dist (candidate: root) -> Backend/wwwroot'
-            inputs:
-              SourceFolder: 'Frontend/dist/employee-crud-angular'
-              Contents: '**'
-              TargetFolder: 'Backend/Backend/wwwroot'
-            continueOnError: true
-
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish wwwroot (debug artifact)'
-            inputs:
-              targetPath: 'Backend/Backend/wwwroot'
-              artifact: 'wwwroot-debug'
+              command: 'custom'
+              customCommand: 'run build -- --configuration production --output-path ../Backend/Backend/wwwroot'
+              workingDir: 'Frontend'
 
           # ---- Publish backend+frontend juntos ----
-          - script: >
-              dotnet publish Backend/Backend/ProductosApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
-            displayName: "Publish Backend+Frontend"
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish Backend+Frontend'
+            inputs:
+              command: 'publish'
+              projects: 'Backend/Backend/ProductosApi.csproj'
+              arguments: '-c Release -o "$(Build.ArtifactStagingDirectory)/publish"'
 
           - task: PublishBuildArtifacts@1
             displayName: "Publish Build Artifact"
