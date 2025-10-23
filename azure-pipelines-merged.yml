@@ -136,21 +136,26 @@ stages:
                   appName: "$(WEBAPP_QA)"
                   package: "$(Pipeline.Workspace)/drop"
 
-              - task: InvokeRESTAPI@1
-                displayName: "Health Check QA"
-                inputs:
-                  connectionType: 'connectedServiceName'
-                  serviceConnection: 'azure-connection-tp06'
-                  method: 'GET'
-                  urlSuffix: 'https://$(WEBAPP_QA).azurewebsites.net/health'
-                  successCriteria: 'eq(root["statusCode"],200)'
+              - powershell: |
+                Write-Host "🔍 Checking health of QA..."
+                try {
+                  $response = Invoke-WebRequest -Uri "https://$(WEBAPP_QA).azurewebsites.net/health" -UseBasicParsing
+                  if ($response.StatusCode -ne 200) {
+                    throw "❌ Health check failed with status $($response.StatusCode)"
+                  }
+                  Write-Host "✅ Health check OK!"
+                } catch {
+                  Write-Error "Health check failed: $_"
+                  exit 1
+                }
+              displayName: "Health Check QA"
+
 
 # =======================================
 # 🚀 DEPLOY PROD
 # =======================================
 - stage: Deploy_PROD
   displayName: "Deploy to Production"
-  dependsOn: Approve_PROD
   variables:
     WEBAPP_PROD: productosweb-prod-gbfnaef6a3c7e3e7.brazilsouth-01
   jobs:
