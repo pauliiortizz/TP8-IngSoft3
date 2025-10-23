@@ -140,22 +140,22 @@ stages:
                   package: "$(Pipeline.Workspace)/drop"
 
               - script: |
-                  echo 🔍 Checking health of QA...
-                  echo using System; using System.Net.Http; using System.Threading.Tasks; > check.cs
-                  echo class Program { static async Task Main() { >> check.cs
-                  echo using var client = new HttpClient(); >> check.cs
-                  echo client.Timeout = TimeSpan.FromSeconds(15); >> check.cs
-                  echo try { >> check.cs
-                  echo var resp = await client.GetAsync("https://$(WEBAPP_QA).azurewebsites.net/health"); >> check.cs
-                  echo if (resp.IsSuccessStatusCode) Console.WriteLine("✅ Health check OK!"); else { Console.WriteLine("❌ Health check failed: " + resp.StatusCode); Environment.Exit(1); } >> check.cs
-                  echo } catch (Exception ex) { Console.WriteLine("❌ Health check error: " + ex.Message); Environment.Exit(1); } >> check.cs
-                  echo } } >> check.cs
-                  dotnet new console -n HealthCheck -o hc >nul
-                  move check.cs hc\Program.cs >nul
-                  cd hc
-                  dotnet run --no-build
-                displayName: "Health Check QA"
-                shell: cmd
+                    echo 🔍 Checking health of QA...
+                    echo using System; using System.Net.Http; using System.Threading.Tasks; > check.cs
+                    echo class Program { static async Task Main() { >> check.cs
+                    echo using var client = new HttpClient(); >> check.cs
+                    echo client.Timeout = TimeSpan.FromSeconds(15); >> check.cs
+                    echo try { >> check.cs
+                    echo var resp = await client.GetAsync("https://$(WEBAPP_QA).azurewebsites.net/health"); >> check.cs
+                    echo if (resp.IsSuccessStatusCode) Console.WriteLine("✅ Health check OK!"); else { Console.WriteLine("❌ Health check failed: " + resp.StatusCode); Environment.Exit(1); } >> check.cs
+                    echo } catch (Exception ex) { Console.WriteLine("❌ Health check error: " + ex.Message); Environment.Exit(1); } >> check.cs
+                    echo } } >> check.cs
+                    dotnet new console -n HealthCheck -o hc >nul
+                    move check.cs hc\Program.cs >nul
+                    cd hc
+                    dotnet run --no-build
+                  displayName: "Health Check QA"
+                  shell: cmd
 
 
 # =======================================
