@@ -80,15 +80,18 @@ stages:
         # ---- Build Angular y copiar al backend ----
         - script: |
             echo "🏗️ Building Angular and copying to backend..."
-            npm run build --prefix Frontend -- --configuration production
-            if not exist Backend\Backend\wwwroot mkdir Backend\Backend\wwwroot
-            xcopy Frontend\dist\* Backend\Backend\wwwroot /E /I /Y
+            cd Frontend
+            npm ci
+            npm run build -- --configuration production
+            cd ..
+            mkdir -p Backend/Backend/wwwroot
+            cp -r Frontend/dist/*/* Backend/Backend/wwwroot/
           displayName: "Build Angular and copy to backend"
+
 
         # ---- Publish backend+frontend juntos ----
         - script: >
-            dotnet publish Backend/Backend/ProductosApi.csproj
-            -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
+            dotnet publish Backend/Backend/ProductApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
           displayName: "Publish Backend+Frontend"
 
         - task: PublishBuildArtifacts@1

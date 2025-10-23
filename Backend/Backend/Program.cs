@@ -36,21 +36,25 @@ app.UseCors("MyPolicy");
 
 
 // Serve static files from wwwroot (so /admin/index.html is available)
+// Serve static files (frontend Angular y admin)
+app.UseDefaultFiles(); // busca index.html automáticamente en wwwroot
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
+app.UseCors("MyPolicy");
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Simple route to serve admin UI
+// Sirve el tester admin en /admin
 app.MapGet("/admin", context =>
 {
     context.Response.Redirect("/admin/index.html");
     return Task.CompletedTask;
 });
 
-// No EF Core migrations; persistencia via MongoDB
+// Para rutas del frontend Angular (SPA)
+app.MapFallbackToFile("index.html");
 
 app.Run();
