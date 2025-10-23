@@ -1,4 +1,3 @@
-
 trigger:
   branches:
     include:
@@ -17,239 +16,191 @@ pool:
   name: Pauli
 
 stages:
-  # =======================================
-  # 🧱 BUILD & TEST
-  # =======================================
-  - stage: BuildAndTest
-    displayName: "Build & Test Backend + Frontend"
-    jobs:
-      - job: BuildAndTest
-        steps:
-          - checkout: self
+# =======================================
+# 🧱 BUILD & TEST
+# =======================================
+- stage: BuildAndTest
+  displayName: "Build & Test Backend + Frontend"
+  jobs:
+    - job: BuildAndTest
+      steps:
+        - checkout: self
 
-          # ---- Backend (.NET 8) ----
-          - task: UseDotNet@2
-            displayName: "Setup .NET 8 SDK"
-            inputs:
-              packageType: sdk
-              version: "8.0.x"
+        # ---- Backend (.NET 8) ----
+        - task: UseDotNet@2
+          displayName: "Setup .NET 8 SDK"
+          inputs:
+            packageType: sdk
+            version: "8.0.x"
 
-          - task: DotNetCoreCLI@2
-            displayName: 'Restore .NET Dependencies'
-            inputs:
-              command: 'restore'
-              projects: 'Backend/ProductApi.sln'
+        - script: dotnet restore Backend/ProductApi.sln
+          displayName: "Restore .NET Dependencies"
 
-          - task: DotNetCoreCLI@2
-            displayName: 'Build .NET Project'
-            inputs:
-              command: 'build'
-              projects: 'Backend/ProductApi.sln'
-              arguments: '--configuration Release --no-restore'
+        - script: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
+          displayName: "Build .NET Project"
 
-          - task: DotNetCoreCLI@2
-            displayName: 'Run .NET Unit Tests'
-            inputs:
-              command: 'test'
-              projects: 'Backend.Tests/EmployeeCrudApi.Tests.csproj'
-              arguments: '--logger "trx;LogFileName=dotnet-tests.trx" --results-directory "$(Build.SourcesDirectory)/test-results"'
+        - script: >
+            dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj
+            --logger "trx;LogFileName=dotnet-tests.trx"
+            --results-directory "$(Build.SourcesDirectory)/test-results"
+          displayName: "Run .NET Unit Tests"
 
-          - task: PublishTestResults@2
-            displayName: "Publish .NET Test Results"
-            inputs:
-              testResultsFormat: "VSTest"
-              testResultsFiles: "test-results/*.trx"
-              mergeTestResults: true
-              failTaskOnFailedTests: true
+        - task: PublishTestResults@2
+          displayName: "Publish .NET Test Results"
+          inputs:
+            testResultsFormat: "VSTest"
+            testResultsFiles: "test-results/*.trx"
+            mergeTestResults: true
+            failTaskOnFailedTests: true
 
-          # ---- Frontend (Angular) ----
-          - task: NodeTool@0
-            displayName: "Setup Node.js 20"
-            inputs:
-              versionSpec: "20.x"
+        # ---- Frontend (Angular) ----
+        - task: NodeTool@0
+          displayName: "Setup Node.js 20"
+          inputs:
+            versionSpec: "20.x"
 
-          - task: Npm@1
-            displayName: 'Install Angular Dependencies'
-            inputs:
-              command: 'ci'
-              workingDir: 'Frontend'
+        - script: npm ci
+          displayName: "Install Angular Dependencies"
+          workingDirectory: Frontend
 
-          - task: Npm@1
-            displayName: 'Run Angular Tests'
-            inputs:
-              command: 'custom'
-              customCommand: 'run test -- --browsers=ChromeHeadless --watch=false --no-progress --code-coverage'
-              workingDir: 'Frontend'
+        - script: |
+            echo "🚀 Running Angular Unit Tests..."
+            npx ng test --browsers=ChromeHeadless --watch=false --no-progress --code-coverage
+          displayName: "Run Angular Tests"
+          workingDirectory: Frontend
 
-          - task: PublishTestResults@2
-            displayName: "Publish Angular Test Results"
-            inputs:
-              testResultsFormat: "JUnit"
-              testResultsFiles: "Frontend/test-results/*.xml"
-              mergeTestResults: true
-              failTaskOnFailedTests: true
+        - task: PublishTestResults@2
+          displayName: "Publish Angular Test Results"
+          inputs:
+            testResultsFormat: "JUnit"
+            testResultsFiles: "Frontend/test-results/*.xml"
+            mergeTestResults: true
+            failTaskOnFailedTests: true
 
-          # ---- Build Angular and write directly to backend wwwroot ----
-          - task: Npm@1
-            displayName: 'Build Angular (production) -> write to Backend/wwwroot'
-            inputs:
-              command: 'custom'
-              customCommand: 'run build -- --configuration production --output-path ../Backend/Backend/wwwroot'
-              workingDir: 'Frontend'
+        # ---- Build Angular y copiar al backend ----
+        - script: |
+            echo "🏗️ Building Angular and copying to backend..."
+            cd Frontend
+            npm ci
+            npm run build -- --configuration production
+            cd ..
+            mkdir -p Backend/Backend/wwwroot
+            cp -r Frontend/dist/*/* Backend/Backend/wwwroot/
+          displayName: "Build Angular and copy to backend"
 
-          - task: CopyFiles@2
-            displayName: 'Flatten Angular browser folder into wwwroot (if present)'
-            inputs:
-              SourceFolder: 'Backend/Backend/wwwroot/browser'
-              Contents: '**'
-              TargetFolder: 'Backend/Backend/wwwroot'
-            continueOnError: true
 
-          # ---- Publish backend+frontend juntos ----
-          - task: DotNetCoreCLI@2
-            displayName: 'Publish Backend+Frontend'
-            inputs:
-              command: 'publish'
-              projects: 'Backend/Backend/ProductosApi.csproj'
-              arguments: '-c Release -o "$(Build.ArtifactStagingDirectory)/publish"'
+        # ---- Publish backend+frontend juntos ----
+        - script: >
+            dotnet publish Backend/Backend/ProductosApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
+          displayName: "Publish Backend+Frontend"
 
-          - task: PublishBuildArtifacts@1
-            displayName: "Publish Build Artifact"
-            inputs:
-              PathtoPublish: "$(Build.ArtifactStagingDirectory)/publish"
-              ArtifactName: "drop"
+        - task: PublishBuildArtifacts@1
+          displayName: "Publish Build Artifact"
+          inputs:
+            PathtoPublish: "$(Build.ArtifactStagingDirectory)/publish"
+            ArtifactName: "drop"
 
-  # =======================================
-  # 🌐 DEPLOY QA
-  # =======================================
-  - stage: Deploy_QA
-    displayName: "Deploy to QA"
-    dependsOn: BuildAndTest
-    variables:
-      WEBAPP_QA: ProductosWEB
-    jobs:
-      - deployment: DeployQA
-        displayName: "Desplegar QA"
-        environment: "QA"
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - checkout: self
-                - download: current
-                  artifact: drop
+# =======================================
+# 🌐 DEPLOY QA
+# =======================================
+- stage: Deploy_QA
+  displayName: "Deploy to QA"
+  dependsOn: BuildAndTest
+  variables:
+    WEBAPP_QA: ProductosWEB
+  jobs:
+    - deployment: DeployQA
+      displayName: "Desplegar QA"
+      environment: "QA"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - download: current
+                artifact: drop
 
-                - task: AzureAppServiceSettings@1
-                  displayName: "Set App Settings QA"
-                  inputs:
-                    azureSubscription: "azure-connection-tp06"
-                    appName: "$(WEBAPP_QA)"
-                    resourceGroupName: "$(RG_QA)"
-                    appSettings: |
-                      [
-                        { "name": "ConnectionStrings__MongoDb", "value": "$(MONGO_CONNSTR_QA)" },
-                        { "name": "ASPNETCORE_ENVIRONMENT", "value": "QA" }
-                      ]
+              - task: AzureAppServiceSettings@1
+                displayName: "Set App Settings QA"
+                inputs:
+                  azureSubscription: "azure-connection-tp06"
+                  appName: "$(WEBAPP_QA)"
+                  resourceGroupName: "$(RG_QA)"
+                  appSettings: |
+                    [
+                      { "name": "ConnectionStrings__MongoDb", "value": "$(MONGO_CONNSTR_QA)" },
+                      { "name": "ASPNETCORE_ENVIRONMENT", "value": "QA" }
+                    ]
 
-                - task: AzureWebApp@1
-                  displayName: "Deploy Backend+Frontend QA"
-                  inputs:
-                    azureSubscription: "azure-connection-tp06"
-                    appName: "$(WEBAPP_QA)"
-                    package: "$(Pipeline.Workspace)/drop"
+              - task: AzureWebApp@1
+                displayName: "Deploy Backend+Frontend QA"
+                inputs:
+                  azureSubscription: "azure-connection-tp06"
+                  appName: "$(WEBAPP_QA)"
+                  package: "$(Pipeline.Workspace)/drop"
 
-                - task: PowerShell@2
-                  displayName: "Health Check QA"
-                  inputs:
-                    targetType: 'inline'
-                    pwsh: false
-                    script: |
-                      Write-Host "🔍 Checking health of QA..."
-                      try {
-                        $response = Invoke-WebRequest -Uri "https://$(WEBAPP_QA).azurewebsites.net/health" -UseBasicParsing -TimeoutSec 15
-                        if ($response.StatusCode -ne 200) {
-                          throw "❌ Health check failed with status $($response.StatusCode)"
-                        }
-                        Write-Host "✅ Health check OK!"
-                      } catch {
-                        Write-Error "❌ Health check failed: $_"
-                        exit 1
-                      }
+              - pwsh: |
+                  Write-Host "🔍 Checking health of QA..."
+                  try {
+                    $response = Invoke-WebRequest -Uri "https://$(WEBAPP_QA).azurewebsites.net/health" -UseBasicParsing -TimeoutSec 15
+                    if ($response.StatusCode -ne 200) {
+                      throw "❌ Health check failed with status $($response.StatusCode)"
+                    }
+                    Write-Host "✅ Health check OK!"
+                  } catch {
+                    Write-Error "❌ Health check failed: $_"
+                    exit 1
+                  }
+                displayName: "Health Check QA"
 
-  # =======================================
-  # ✅ APPROVAL GATE
-  # =======================================
-  - stage: Approve_PROD
-    displayName: "Manual approval before Production"
-    dependsOn: Deploy_QA
-    jobs:
-      - job: WaitForApproval
-        displayName: "Esperar aprobación QA/Negocio"
-        pool: server
-        steps:
-          - task: ManualValidation@0
-            displayName: "Aprobación manual para desplegar a PROD"
-            timeoutInMinutes: 4320  # 3 días
-            inputs:
-              instructions: |
-                1. Validar el despliegue QA.
-                2. Confirmar que las pruebas funcionales pasaron.
-                3. Obtener el OK del profesor o del QA lead.
-              onTimeout: 'reject'
+# =======================================
+# 🚀 DEPLOY PROD
+# =======================================
+- stage: Deploy_PROD
+  displayName: "Deploy to Production"
+  variables:
+    WEBAPP_PROD: ProductosWEB-PROD
+  jobs:
+    - deployment: DeployPROD
+      displayName: "Desplegar PROD"
+      environment: "PROD"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - download: current
+                artifact: drop
 
-  # =======================================
-  # 🚀 DEPLOY PROD
-  # =======================================
-  - stage: Deploy_PROD
-    displayName: "Deploy to Production"
-    dependsOn: Approve_PROD
-    variables:
-      WEBAPP_PROD: ProductosWEB-PROD
-    jobs:
-      - deployment: DeployPROD
-        displayName: "Desplegar PROD"
-        environment: "PROD"
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - checkout: self
-                - download: current
-                  artifact: drop
+              - task: AzureAppServiceSettings@1
+                displayName: "Set App Settings PROD"
+                inputs:
+                  azureSubscription: "azure-connection-tp06"
+                  appName: "$(WEBAPP_PROD)"
+                  resourceGroupName: "$(RG_PROD)"
+                  appSettings: |
+                    [
+                      { "name": "ConnectionStrings__MongoDb", "value": "$(MONGO_CONNSTR_PROD)" },
+                      { "name": "ASPNETCORE_ENVIRONMENT", "value": "Production" }
+                    ]
 
-                - task: AzureAppServiceSettings@1
-                  displayName: "Set App Settings PROD"
-                  inputs:
-                    azureSubscription: "azure-connection-tp06"
-                    appName: "$(WEBAPP_PROD)"
-                    resourceGroupName: "$(RG_PROD)"
-                    appSettings: |
-                      [
-                        { "name": "ConnectionStrings__MongoDb", "value": "$(MONGO_CONNSTR_PROD)" },
-                        { "name": "ASPNETCORE_ENVIRONMENT", "value": "Production" }
-                      ]
+              - task: AzureWebApp@1
+                displayName: "Deploy Backend+Frontend PROD"
+                inputs:
+                  azureSubscription: "azure-connection-tp06"
+                  appName: "$(WEBAPP_PROD)"
+                  package: "$(Pipeline.Workspace)/drop"
 
-                - task: AzureWebApp@1
-                  displayName: "Deploy Backend+Frontend PROD"
-                  inputs:
-                    azureSubscription: "azure-connection-tp06"
-                    appName: "$(WEBAPP_PROD)"
-                    package: "$(Pipeline.Workspace)/drop"
-
-                - task: PowerShell@2
-                  displayName: "Health Check PROD"
-                  inputs:
-                    targetType: 'inline'
-                    pwsh: false
-                    script: |
-                      Write-Host "🔍 Checking health of PROD..."
-                      try {
-                        $response = Invoke-WebRequest -Uri "https://$(WEBAPP_PROD).azurewebsites.net/health"
-                        if ($response.StatusCode -ne 200) {
-                          throw "❌ Health check failed with status $($response.StatusCode)"
-                        }
-                        Write-Host "✅ Health check OK!"
-                      } catch {
-                        Write-Error "❌ Health check failed: $_"
-                        exit 1
-                      }
+              - pwsh: |
+                  Write-Host "🔍 Checking health of PROD..."
+                  try {
+                    $response = Invoke-WebRequest -Uri "https://$(WEBAPP_PROD).azurewebsites.net/health"
+                    if ($response.StatusCode -ne 200) {
+                      throw "❌ Health check failed with status $($response.StatusCode)"
+                    }
+                    Write-Host "✅ Health check OK!"
+                  } catch {
+                    Write-Error "❌ Health check failed: $_"
+                    exit 1
+                  }
+                displayName: "Health Check PROD"
