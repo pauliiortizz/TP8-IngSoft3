@@ -91,7 +91,7 @@ stages:
 
         # ---- Publish backend+frontend juntos ----
         - script: >
-            dotnet publish Backend/Backend/ProductApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
+            dotnet publish Backend/Backend/ProductosApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
           displayName: "Publish Backend+Frontend"
 
         - task: PublishBuildArtifacts@1
