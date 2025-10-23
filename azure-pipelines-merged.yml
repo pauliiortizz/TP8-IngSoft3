@@ -79,13 +79,25 @@ stages:
 
         # ---- Build Angular y copiar al backend ----
         - script: |
-            echo "🏗️ Building Angular and copying to backend..."
+            echo "🏗️ Building Angular and copying to backend (flattening dist)..."
+            set -e
             cd Frontend
             npm ci
             npm run build -- --configuration production
             cd ..
             mkdir -p Backend/Backend/wwwroot
-            cp -r Frontend/dist/*/* Backend/Backend/wwwroot/
+            echo "Contents of Frontend/dist:" && ls -la Frontend/dist || true
+            # Copy all files from any app folder inside dist into wwwroot (flatten)
+            # This handles cases where Angular outputs into dist/<appName>/
+            for d in Frontend/dist/*; do
+              if [ -d "$d" ]; then
+                echo "Copying from $d -> Backend/Backend/wwwroot/"
+                cp -r "$d"/* Backend/Backend/wwwroot/ || true
+              fi
+            done
+            # Fallback: if files are directly in Frontend/dist, copy them as well
+            cp -r Frontend/dist/* Backend/Backend/wwwroot/ || true
+            echo "Final wwwroot listing:" && ls -la Backend/Backend/wwwroot || true
           displayName: "Build Angular and copy to backend"
 
 
