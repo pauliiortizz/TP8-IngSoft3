@@ -120,10 +120,10 @@ stages:
               - script: |
                   echo Setting App Settings QA...
                   "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set ^
-                    --name $(WEBAPP_QA) ^
-                    --resource-group $(RG_QA) ^
-                    --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" ^
-                               ASPNETCORE_ENVIRONMENT="QA"
+                  --name $(WEBAPP_QA) ^
+                  --resource-group $(RG_QA) ^
+                  --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" ^
+                             ASPNETCORE_ENVIRONMENT="QA"
                 displayName: "Set App Settings QA"
                 shell: cmd
 
@@ -152,7 +152,7 @@ stages:
       steps:
         - task: ManualValidation@0
           displayName: "Aprobación manual para desplegar a PROD"
-          timeoutInMinutes: 4320  # 3 días
+          timeoutInMinutes: 4320
           inputs:
             instructions: |
               1. Validar el despliegue QA.
@@ -183,10 +183,10 @@ stages:
               - script: |
                   echo Setting App Settings PROD...
                   "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set ^
-                    --name $(WEBAPP_PROD) ^
-                    --resource-group $(RG_PROD) ^
-                    --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" ^
-                               ASPNETCORE_ENVIRONMENT="Production"
+                  --name $(WEBAPP_PROD) ^
+                  --resource-group $(RG_PROD) ^
+                  --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" ^
+                             ASPNETCORE_ENVIRONMENT="Production"
                 displayName: "Set App Settings PROD"
                 shell: cmd
 
