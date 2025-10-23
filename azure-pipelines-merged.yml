@@ -139,24 +139,19 @@ stages:
                   appName: "$(WEBAPP_QA)"
                   package: "$(Pipeline.Workspace)/drop"
 
-              - task: PowerShell@2
-                displayName: "Health Check QA"
-                inputs:
-                  targetType: 'inline'
-                  script: |
-                    Write-Host "🔍 Checking health of QA..."
-                    try {
-                      $response = Invoke-WebRequest -Uri "https://$(WEBAPP_QA).azurewebsites.net/health" -UseBasicParsing
-                      if ($response.StatusCode -eq 200) {
-                        Write-Host "✅ Health check OK!"
-                      } else {
-                        Write-Error "❌ Health check failed with status $($response.StatusCode)"
-                        exit 1
-                      }
-                    } catch {
-                      Write-Error "❌ Health check failed: $_"
-                      exit 1
-                    }
+              - script: |
+                  echo 🔍 Checking health of PROD...
+                  dotnet tool install -g Microsoft.DotNet.HttpRepl >nul 2>&1
+                  SET PATH=%PATH%;%USERPROFILE%\.dotnet\tools
+                  httprepl https://$(WEBAPP_PROD).azurewebsites.net --exit --quiet
+                  if %errorlevel% NEQ 0 (
+                      echo ❌ Health check failed!
+                      exit /b 1
+                  ) else (
+                      echo ✅ Health check OK!
+                  )
+                  displayName: "Health Check PROD"
+                  shell: cmd
 
 # =======================================
 # 🚀 DEPLOY PROD
