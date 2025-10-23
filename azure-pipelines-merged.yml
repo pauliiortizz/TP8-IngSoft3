@@ -117,15 +117,17 @@ stages:
               - download: current
                 artifact: drop
 
-              - script: |
-                  echo Setting App Settings QA...
-                  az webapp config appsettings set ^
-                  --name $(WEBAPP_QA) ^
-                  --resource-group $(RG_QA) ^
-                  --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" ^
-                             ASPNETCORE_ENVIRONMENT="QA"
-                  displayName: "Set App Settings QA"
-                  shell: cmd
+              - task: AzureAppServiceSettings@1
+                displayName: "Set App Settings QA"
+                inputs:
+                  azureSubscription: "azure-connection-tp06"
+                  appName: "$(WEBAPP_QA)"
+                  resourceGroupName: "$(RG_QA)"
+                  appSettings: |
+                    [
+                      { "name": "ConnectionStrings__MongoDb", "value": "$(MONGO_CONNSTR_QA)" },
+                      { "name": "ASPNETCORE_ENVIRONMENT", "value": "QA" }
+                    ]
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend QA"
