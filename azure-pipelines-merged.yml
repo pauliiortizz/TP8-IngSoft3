@@ -124,8 +124,8 @@ stages:
                   --resource-group $(RG_QA) ^
                   --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" ^
                              ASPNETCORE_ENVIRONMENT="QA"
-                displayName: "Set App Settings QA"
-                shell: cmd
+                  displayName: "Set App Settings QA"
+                  shell: cmd
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend QA"
@@ -187,8 +187,8 @@ stages:
                   --resource-group $(RG_PROD) ^
                   --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" ^
                              ASPNETCORE_ENVIRONMENT="Production"
-                displayName: "Set App Settings PROD"
-                shell: cmd
+                  displayName: "Set App Settings PROD"
+                  shell: cmd
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend PROD"
