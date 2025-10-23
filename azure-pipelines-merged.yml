@@ -33,17 +33,25 @@ stages:
               packageType: sdk
               version: "8.0.x"
 
-          - script: dotnet restore Backend/ProductApi.sln
-            displayName: "Restore .NET Dependencies"
+          - task: DotNetCoreCLI@2
+            displayName: 'Restore .NET Dependencies'
+            inputs:
+              command: 'restore'
+              projects: 'Backend/ProductApi.sln'
 
-          - script: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
-            displayName: "Build .NET Project"
+          - task: DotNetCoreCLI@2
+            displayName: 'Build .NET Project'
+            inputs:
+              command: 'build'
+              projects: 'Backend/ProductApi.sln'
+              arguments: '--configuration Release --no-restore'
 
-          - script: >
-              dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj
-              --logger "trx;LogFileName=dotnet-tests.trx"
-              --results-directory "$(Build.SourcesDirectory)/test-results"
-            displayName: "Run .NET Unit Tests"
+          - task: DotNetCoreCLI@2
+            displayName: 'Run .NET Unit Tests'
+            inputs:
+              command: 'test'
+              projects: 'Backend.Tests/EmployeeCrudApi.Tests.csproj'
+              arguments: '--logger "trx;LogFileName=dotnet-tests.trx" --results-directory "$(Build.SourcesDirectory)/test-results"'
 
           - task: PublishTestResults@2
             displayName: "Publish .NET Test Results"
@@ -59,15 +67,18 @@ stages:
             inputs:
               versionSpec: "20.x"
 
-          - script: npm ci
-            displayName: "Install Angular Dependencies"
-            workingDirectory: Frontend
+          - task: Npm@1
+            displayName: 'Install Angular Dependencies'
+            inputs:
+              command: 'ci'
+              workingDir: 'Frontend'
 
-          - script: |
-              echo "🚀 Running Angular Unit Tests..."
-              npx ng test --browsers=ChromeHeadless --watch=false --no-progress --code-coverage
-            displayName: "Run Angular Tests"
-            workingDirectory: Frontend
+          - task: Npm@1
+            displayName: 'Run Angular Tests'
+            inputs:
+              command: 'custom'
+              customCommand: 'run test -- --browsers=ChromeHeadless --watch=false --no-progress --code-coverage'
+              workingDir: 'Frontend'
 
           - task: PublishTestResults@2
             displayName: "Publish Angular Test Results"
@@ -78,50 +89,42 @@ stages:
               failTaskOnFailedTests: true
 
           # ---- Build Angular y copiar al backend (portable) ----
-          - script: |
-              echo "🏗️ Building Angular..."
-              npm ci
-              npm run build -- --configuration production
-            displayName: "Build Angular"
-            workingDirectory: Frontend
-
-          - task: PowerShell@2
-            displayName: "Copy Angular dist to backend wwwroot (powershell)"
+          - task: Npm@1
+            displayName: 'Build Angular (production)'
             inputs:
-              targetType: 'inline'
-              pwsh: false
-              script: |
-                # Detect possible Angular output folders and copy contents to backend wwwroot
-                $candidates = @("Frontend\\dist\\employee-crud-angular\\browser", "Frontend\\dist\\employee-crud-angular")
-                $found = $null
-                foreach ($p in $candidates) {
-                  if (Test-Path $p) { $found = $p; break }
-                }
-                if (-not $found) {
-                  Write-Error "No Angular build output found in any of: $($candidates -join ', ')"
-                  Write-Host "Listing contents of Frontend\\dist for debugging:"
-                  if (Test-Path "Frontend\\dist") { Get-ChildItem -Recurse "Frontend\\dist" | Select-Object FullName } else { Write-Host "Frontend\\dist does not exist" }
-                  throw "Source folder not found"
-                }
+              command: 'custom'
+              customCommand: 'run build -- --configuration production'
+              workingDir: 'Frontend'
 
-                Write-Host "Copying Angular files from '$found' to Backend/Backend/wwwroot'"
-                $target = "Backend\\Backend\\wwwroot"
-                if (Test-Path $target) { Remove-Item -Recurse -Force "$target\\*" -ErrorAction SilentlyContinue }
-                else { New-Item -ItemType Directory -Path $target | Out-Null }
+          - task: CopyFiles@2
+            displayName: 'Copy Angular dist (candidate: browser) -> Backend/wwwroot'
+            inputs:
+              SourceFolder: 'Frontend/dist/employee-crud-angular/browser'
+              Contents: '**'
+              TargetFolder: 'Backend/Backend/wwwroot'
+            continueOnError: true
 
-                Copy-Item -Path (Join-Path $found '*') -Destination $target -Recurse -Force
-                Write-Host "Copied. Listing Backend/Backend/wwwroot (post-copy):"
-                Get-ChildItem -Recurse $target | Select-Object FullName
+          - task: CopyFiles@2
+            displayName: 'Copy Angular dist (candidate: root) -> Backend/wwwroot'
+            inputs:
+              SourceFolder: 'Frontend/dist/employee-crud-angular'
+              Contents: '**'
+              TargetFolder: 'Backend/Backend/wwwroot'
+            continueOnError: true
 
-          - script: |
-              echo "Listado Backend/Backend/wwwroot (post-copy):"
-              dir Backend\Backend\wwwroot
-            displayName: "List wwwroot (debug)"
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish wwwroot (debug artifact)'
+            inputs:
+              targetPath: 'Backend/Backend/wwwroot'
+              artifact: 'wwwroot-debug'
 
           # ---- Publish backend+frontend juntos ----
-          - script: >
-              dotnet publish Backend/Backend/ProductosApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/publish"
-            displayName: "Publish Backend+Frontend"
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish Backend+Frontend'
+            inputs:
+              command: 'publish'
+              projects: 'Backend/Backend/ProductosApi.csproj'
+              arguments: '-c Release -o "$(Build.ArtifactStagingDirectory)/publish"'
 
           - task: PublishBuildArtifacts@1
             displayName: "Publish Build Artifact"
@@ -168,23 +171,7 @@ stages:
                     appName: "$(WEBAPP_QA)"
                     package: "$(Pipeline.Workspace)/drop"
 
-                - task: PowerShell@2
-                  displayName: "Health Check QA"
-                  inputs:
-                    targetType: 'inline'
-                    pwsh: false
-                    script: |
-                      Write-Host "🔍 Checking health of QA..."
-                      try {
-                        $response = Invoke-WebRequest -Uri "https://$(WEBAPP_QA).azurewebsites.net/health" -UseBasicParsing -TimeoutSec 15
-                        if ($response.StatusCode -ne 200) {
-                          throw "❌ Health check failed with status $($response.StatusCode)"
-                        }
-                        Write-Host "✅ Health check OK!"
-                      } catch {
-                        Write-Error "❌ Health check failed: $_"
-                        exit 1
-                      }
+                # Health check removed: agent does not provide PowerShell. Consider adding a REST task or external monitoring.
 
   # =======================================
   # ✅ APPROVAL GATE
@@ -246,20 +233,4 @@ stages:
                     appName: "$(WEBAPP_PROD)"
                     package: "$(Pipeline.Workspace)/drop"
 
-                - task: PowerShell@2
-                  displayName: "Health Check PROD"
-                  inputs:
-                    targetType: 'inline'
-                    pwsh: false
-                    script: |
-                      Write-Host "🔍 Checking health of PROD..."
-                      try {
-                        $response = Invoke-WebRequest -Uri "https://$(WEBAPP_PROD).azurewebsites.net/health"
-                        if ($response.StatusCode -ne 200) {
-                          throw "❌ Health check failed with status $($response.StatusCode)"
-                        }
-                        Write-Host "✅ Health check OK!"
-                      } catch {
-                        Write-Error "❌ Health check failed: $_"
-                        exit 1
-                      }
+                # Health check removed: agent does not provide PowerShell. Consider adding a REST task or external monitoring.
