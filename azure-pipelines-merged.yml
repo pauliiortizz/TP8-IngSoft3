@@ -148,8 +148,8 @@ stages:
                     echo "❌ Health check failed!"
                     exit 1
                   fi
-                displayName: "Health Check QA"
-                shell: bash
+                  displayName: "Health Check QA"
+                  shell: bash
 
 # =======================================
 # 🚀 DEPLOY PROD
