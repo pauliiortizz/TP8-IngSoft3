@@ -156,8 +156,7 @@ stages:
                   dotnet run --no-build
                 displayName: "Health Check QA"
                 shell: cmd
-
-
+                
 # =======================================
 # 🚀 DEPLOY PROD
 # =======================================
@@ -184,8 +183,8 @@ stages:
                   --resource-group $(RG_PROD) ^
                   --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" ^
                              ASPNETCORE_ENVIRONMENT="Production"
-                  displayName: "Set App Settings PROD"
-                  shell: cmd
+                displayName: "Set App Settings PROD"
+                shell: cmd
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend PROD"
