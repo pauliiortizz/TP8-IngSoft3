@@ -119,17 +119,15 @@ stages:
               - download: current
                 artifact: drop
 
-              - task: PowerShell@2
+              - script: |
+                  echo Setting App Settings QA...
+                  "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set ^
+                    --name $(WEBAPP_QA) ^
+                    --resource-group $(RG_QA) ^
+                    --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" ^
+                              ASPNETCORE_ENVIRONMENT="QA"
                 displayName: "Set App Settings QA"
-                inputs:
-                  targetType: inline
-                  script: |
-                    Write-Host "Setting app settings for QA..."
-                    & "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set `
-                      --name $(WEBAPP_QA) `
-                      --resource-group $(RG_QA) `
-                      --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" `
-                                ASPNETCORE_ENVIRONMENT="QA"
+                shell: cmd
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend QA"
@@ -186,17 +184,15 @@ stages:
               - download: current
                 artifact: drop
 
-              - task: PowerShell@2
+              - script: |
+                  echo Setting App Settings PROD...
+                  "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set ^
+                    --name $(WEBAPP_PROD) ^
+                    --resource-group $(RG_PROD) ^
+                    --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" ^
+                              ASPNETCORE_ENVIRONMENT="Production"
                 displayName: "Set App Settings PROD"
-                inputs:
-                  targetType: inline
-                  script: |
-                    Write-Host "Setting app settings for PROD..."
-                    & "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set `
-                      --name $(WEBAPP_PROD) `
-                      --resource-group $(RG_PROD) `
-                      --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" `
-                                ASPNETCORE_ENVIRONMENT="Production"
+                shell: cmd
 
               - task: AzureWebApp@1
                 displayName: "Deploy Backend+Frontend PROD"
