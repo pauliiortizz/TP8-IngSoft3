@@ -10,7 +10,7 @@ pr:
       - '*'
 
 variables:
-- group: BackendSecrets  # donde están MONGO_CONNSTR_QA / PROD, RG_QA / PROD, etc.
+- group: BackendSecrets
 
 pool:
   name: Pauli
@@ -119,7 +119,7 @@ stages:
 
               - script: |
                   echo Setting App Settings QA...
-                  "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set ^
+                  az webapp config appsettings set ^
                   --name $(WEBAPP_QA) ^
                   --resource-group $(RG_QA) ^
                   --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_QA)" ^
@@ -182,7 +182,7 @@ stages:
 
               - script: |
                   echo Setting App Settings PROD...
-                  "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" webapp config appsettings set ^
+                  az webapp config appsettings set ^
                   --name $(WEBAPP_PROD) ^
                   --resource-group $(RG_PROD) ^
                   --settings ConnectionStrings__MongoDb="$(MONGO_CONNSTR_PROD)" ^
