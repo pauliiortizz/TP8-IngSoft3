@@ -154,8 +154,8 @@ stages:
                   move check.cs hc\Program.cs >nul
                   cd hc
                   dotnet run --no-build
-              displayName: "Health Check QA"
-              shell: cmd
+                displayName: "Health Check QA"
+                shell: cmd
 
 
 # =======================================
