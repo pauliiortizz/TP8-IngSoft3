@@ -98,11 +98,11 @@ stages:
             Contents: '**/*'
             TargetFolder: 'Backend/Backend/wwwroot'
             OverWrite: true
+            flattenFolders: true
             # Flattening handled by selecting files, CopyFiles@2 will copy file tree; if dist contains an extra folder (e.g. dist/browser), we'll copy its contents as well
 
-        - script: |
-            echo "Final wwwroot listing:" && ls -la Backend/Backend/wwwroot || true
-          displayName: 'Show final wwwroot listing'
+        # Note: removed shell-based listing step (ls) because agents may be Windows/cmd-only.
+        # If you need a listing in logs, we can add an agent-appropriate task later.
 
 
         # ---- Publish backend+frontend juntos ----
