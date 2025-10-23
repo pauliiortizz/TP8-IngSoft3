@@ -137,17 +137,17 @@ stages:
                   package: "$(Pipeline.Workspace)/drop"
 
               - powershell: |
-                Write-Host "🔍 Checking health of QA..."
-                try {
-                  $response = Invoke-WebRequest -Uri "https://$(WEBAPP_QA).azurewebsites.net/health" -UseBasicParsing
-                  if ($response.StatusCode -ne 200) {
-                    throw "❌ Health check failed with status $($response.StatusCode)"
+                  Write-Host "🔍 Checking health of QA..."
+                  try {
+                    $response = Invoke-WebRequest -Uri "https://$(WEBAPP_QA).azurewebsites.net/health" -UseBasicParsing
+                    if ($response.StatusCode -ne 200) {
+                      throw "❌ Health check failed with status $($response.StatusCode)"
+                    }
+                    Write-Host "✅ Health check OK!"
+                  } catch {
+                    Write-Error "Health check failed: $_"
+                    exit 1
                   }
-                  Write-Host "✅ Health check OK!"
-                } catch {
-                  Write-Error "Health check failed: $_"
-                  exit 1
-                }
                 displayName: "Health Check QA"
 
 
