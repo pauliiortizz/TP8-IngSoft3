@@ -77,16 +77,26 @@ stages:
             mergeTestResults: true
             failTaskOnFailedTests: true
 
-        # ---- Build Angular y copiar al backend ----
+        # ---- Build Angular y copiar al backend (portable) ----
         - script: |
-            echo "🏗️ Building Angular and copying to backend..."
-            cd Frontend
+            echo "🏗️ Building Angular..."
             npm ci
             npm run build -- --configuration production
-            cd ..
-            mkdir -p Backend/Backend/wwwroot
-            cp -r Frontend/dist/*/* Backend/Backend/wwwroot/
-          displayName: "Build Angular and copy to backend"
+          displayName: "Build Angular"
+          workingDirectory: Frontend
+
+        - task: CopyFiles@2
+          displayName: "Copy Angular dist to backend wwwroot"
+          inputs:
+            # If Angular build produces a 'browser' subfolder (SSR), copy from there so index.html lands at wwwroot root
+            SourceFolder: 'Frontend/dist/employee-crud-angular/browser'
+            Contents: '**'
+            TargetFolder: 'Backend/Backend/wwwroot'
+
+        - script: |
+            echo "Listado Backend/Backend/wwwroot (post-copy):"
+            dir Backend\Backend\wwwroot
+          displayName: "List wwwroot (debug)"
 
 
         # ---- Publish backend+frontend juntos ----
