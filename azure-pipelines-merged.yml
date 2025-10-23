@@ -85,18 +85,29 @@ stages:
           displayName: "Build Angular"
           workingDirectory: Frontend
 
-        - task: CopyFiles@2
-          displayName: "Copy Angular dist to backend wwwroot"
-          inputs:
-            # If Angular build produces a 'browser' subfolder (SSR), copy from there so index.html lands at wwwroot root
-            SourceFolder: 'Frontend/dist/employee-crud-angular/browser'
-            Contents: '**'
-            TargetFolder: 'Backend/Backend/wwwroot'
+        - pwsh: |
+            # Detect possible Angular output folders and copy contents to backend wwwroot
+            $candidates = @("Frontend\dist\employee-crud-angular\browser", "Frontend\dist\employee-crud-angular")
+            $found = $null
+            foreach ($p in $candidates) {
+              if (Test-Path $p) { $found = $p; break }
+            }
+            if (-not $found) {
+              Write-Error "No Angular build output found in any of: $($candidates -join ', ')"
+              Write-Host "Listing contents of Frontend\dist for debugging:"
+              if (Test-Path "Frontend\dist") { Get-ChildItem -Recurse "Frontend\dist" | Select-Object FullName } else { Write-Host "Frontend\dist does not exist" }
+              throw "Source folder not found"
+            }
 
-        - script: |
-            echo "Listado Backend/Backend/wwwroot (post-copy):"
-            dir Backend\Backend\wwwroot
-          displayName: "List wwwroot (debug)"
+            Write-Host "Copying Angular files from '$found' to Backend/Backend/wwwroot'"
+            $target = "Backend\Backend\wwwroot"
+            if (Test-Path $target) { Remove-Item -Recurse -Force "$target\*" -ErrorAction SilentlyContinue }
+            else { New-Item -ItemType Directory -Path $target | Out-Null }
+
+            Copy-Item -Path (Join-Path $found '*') -Destination $target -Recurse -Force
+            Write-Host "Copied. Listing Backend/Backend/wwwroot (post-copy):"
+            Get-ChildItem -Recurse $target | Select-Object FullName
+          displayName: "Copy Angular dist to backend wwwroot (pwsh)"
 
 
         # ---- Publish backend+frontend juntos ----
