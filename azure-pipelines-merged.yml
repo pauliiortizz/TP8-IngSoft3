@@ -97,6 +97,14 @@ stages:
               customCommand: 'run build -- --configuration production --output-path ../Backend/Backend/wwwroot'
               workingDir: 'Frontend'
 
+          - task: CopyFiles@2
+            displayName: 'Flatten Angular browser folder into wwwroot (if present)'
+            inputs:
+              SourceFolder: 'Backend/Backend/wwwroot/browser'
+              Contents: '**'
+              TargetFolder: 'Backend/Backend/wwwroot'
+            continueOnError: true
+
           # ---- Publish backend+frontend juntos ----
           - task: DotNetCoreCLI@2
             displayName: 'Publish Backend+Frontend'
