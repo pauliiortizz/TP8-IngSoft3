@@ -36,6 +36,22 @@ stages:
         - script: dotnet restore Backend/ProductApi.sln
           displayName: "Restore .NET Dependencies"
 
+        # ✅ Ejecutar pruebas del backend con cobertura
+        - task: DotNetCoreCLI@2
+          displayName: "Ejecutar pruebas de la API (con cobertura)"
+          inputs:
+            command: "test"
+            projects: "Backend.Tests/**/*.csproj"
+            arguments: '--collect:"XPlat Code Coverage"'
+            publishTestResults: true
+
+        # ✅ Publicar resultados de cobertura del backend
+        - task: PublishCodeCoverageResults@2
+          displayName: "Publicar resultados de code coverage del back-end"
+          inputs:
+            summaryFileLocation: "$(Agent.TempDirectory)/**/*.cobertura.xml"
+            failIfCoverageEmpty: false
+
         - script: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
           displayName: "Build .NET Project"
 
@@ -63,27 +79,30 @@ stages:
           displayName: "Install Angular Dependencies"
           workingDirectory: Frontend
 
-        - script: |
-            echo "🚀 Running Angular Unit Tests..."
-            npx ng test --browsers=ChromeHeadless --watch=false --no-progress --code-coverage
-          displayName: "Run Angular Tests"
+        # ✅ Ejecutar pruebas del front (antes del build)
+        - script: npx ng test --karma-config=karma.conf.js --watch=false --browsers ChromeHeadless --code-coverage
+          displayName: "Ejecutar pruebas del front"
           workingDirectory: Frontend
+          continueOnError: true
 
+        # ✅ Publicar resultados de code coverage del front
+        - task: PublishCodeCoverageResults@2
+          displayName: "Publicar resultados de code coverage del front"
+          inputs:
+            summaryFileLocation: "Frontend/coverage/lcov.info"
+            failIfCoverageEmpty: false
+          condition: always()
+
+        # ✅ Publicar resultados de pruebas unitarias del front
         - task: PublishTestResults@2
-          displayName: "Publish Angular Test Results"
+          displayName: "Publicar resultados de pruebas unitarias del front"
           inputs:
             testResultsFormat: "JUnit"
-            testResultsFiles: "Frontend/test-results/*.xml"
-            mergeTestResults: true
+            testResultsFiles: "Frontend/test-results/test-results.xml"
             failTaskOnFailedTests: true
+          condition: always()
 
         # ---- Build Angular y copiar al backend ----
-        - task: Npm@1
-          displayName: 'npm ci (frontend)'
-          inputs:
-            command: 'ci'
-            workingDir: 'Frontend'
-
         - task: Npm@1
           displayName: 'npm run build (frontend)'
           inputs:
@@ -99,11 +118,6 @@ stages:
             TargetFolder: 'Backend/Backend/wwwroot'
             OverWrite: true
             flattenFolders: true
-            # Flattening handled by selecting files, CopyFiles@2 will copy file tree; if dist contains an extra folder (e.g. dist/browser), we'll copy its contents as well
-
-        # Note: removed shell-based listing step (ls) because agents may be Windows/cmd-only.
-        # If you need a listing in logs, we can add an agent-appropriate task later.
-
 
         # ---- Publish backend+frontend juntos ----
         - script: >
