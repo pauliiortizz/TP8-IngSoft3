@@ -25,13 +25,10 @@ export class EmployeeService {
     }
 
     if (typeof value === 'string') {
-      const parsed = Date.parse(value);
-      if (!Number.isNaN(parsed)) {
-        return new Date(parsed);
-      }
-
-  // Manually parse dd/MM/yyyy HH:mm:ss since Date.parse assumes mm/dd ordering
-  const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/);
+      // First try manual dd/MM/yyyy HH:mm:ss parsing because Date.parse
+      // interprets ambiguous dates using the host's or ECMAScript's rules
+      // (often MM/dd), which causes inverted day/month values.
+      const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}):(\d{2}))?$/);
       if (match) {
         const [, day, month, year, hour = '00', minute = '00', second = '00'] = match;
         return new Date(
@@ -42,6 +39,12 @@ export class EmployeeService {
           Number(minute),
           Number(second)
         );
+      }
+
+      // Fallback: try Date.parse for ISO strings or other unambiguous formats
+      const parsed = Date.parse(value);
+      if (!Number.isNaN(parsed)) {
+        return new Date(parsed);
       }
     }
 
