@@ -51,9 +51,29 @@ stages:
           inputs:
             summaryFileLocation: "$(Agent.TempDirectory)/**/*.cobertura.xml"
             failIfCoverageEmpty: false
+        
+        # --- 🔍 Integración con SonarCloud ---
+        - task: SonarCloudPrepare@2
+          inputs:
+            SonarCloud: 'SonarCloud-connection-tp07'   # nombre de tu service connection
+            organization: 'paulinaortiz-tp7'           # organización de tu cuenta SonarCloud
+            scannerMode: 'MSBuild'
+            projectKey: 'paulinaortiz_TP6'             # clave única de tu proyecto SonarCloud
+            projectName: 'TP6'                         # nombre visible de tu proyecto
+          displayName: '🔍 Preparar análisis SonarCloud'
 
         - script: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
           displayName: "Build .NET Project"
+
+        - task: SonarCloudAnalyze@2
+          inputs:
+            jdkversion: 'JAVA_HOME_17_X64'
+          displayName: 'Analyze SonarCloud'
+          
+        - task: SonarCloudPublish@2
+          displayName: 'Publish SonarCloud'
+          inputs:
+            pollingTimeoutSec: '300'
 
         - script: >
             dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj
