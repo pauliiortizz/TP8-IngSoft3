@@ -70,8 +70,13 @@ jobs:
       # ---- Combine Backend + Frontend ----
       - name: Copy Frontend to Backend wwwroot
         run: |
-          mkdir -p Backend/Backend/wwwroot
-          cp -r Frontend/dist/* Backend/Backend/wwwroot/
+          # Copiar el frontend Angular (index.html y assets)
+          cp -r Frontend/dist/employee-crud-angular/browser/* Backend/Backend/wwwroot/
+          
+      - name: Verify admin.html exists
+        run: |
+          echo "Verificando que admin.html esté presente..."
+          ls -la Backend/Backend/wwwroot/ | grep admin || echo "⚠️ admin.html no encontrado"
 
       - name: Publish Backend + Frontend
         run: dotnet publish Backend/Backend/ProductosApi.csproj -c Release -o ./publish
