@@ -1,31 +1,16 @@
-# Dockerfile para Producción
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+# Dockerfile para PRODUCTION - Version simplificada para CI/CD
+# Usa archivos ya publicados como contexto
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
+
+# Exponer puertos
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-
-# Copiar archivos de proyecto y restaurar dependencias
-COPY ["Backend/Backend/ProductosApi.csproj", "Backend/Backend/"]
-RUN dotnet restore "Backend/Backend/ProductosApi.csproj"
-
-# Copiar todo el código fuente
+# Copiar archivos ya publicados desde el contexto (./publish)
 COPY . .
-WORKDIR "/src/Backend/Backend"
 
-# Build del proyecto
-RUN dotnet build "ProductosApi.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "ProductosApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
-
-# Configurar variable de entorno para Producción
+# Configurar variable de entorno para Production
 ENV ASPNETCORE_ENVIRONMENT=Production
 
 ENTRYPOINT ["dotnet", "ProductosApi.dll"]
