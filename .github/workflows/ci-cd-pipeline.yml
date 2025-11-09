@@ -30,13 +30,15 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore .NET Dependencies
-        run: dotnet restore Backend/ProductApi.sln
+        run: |
+          dotnet restore Backend/ProductApi.sln
+          dotnet restore Backend.Tests/EmployeeCrudApi.Tests.csproj
 
       - name: Build Backend
         run: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
 
       - name: Run Backend Tests
-        run: dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj --no-restore --verbosity normal
+        run: dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj --configuration Release --no-build --verbosity normal
 
       # ---- Frontend (Angular) ----
       - name: Setup Node.js
