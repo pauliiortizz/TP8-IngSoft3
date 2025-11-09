@@ -1,19 +1,7 @@
 # 📋 TP8 - Decisiones Técnicas y Documentación de Implementación
 
-**Alumna**: Paula Ortiz  
-**Materia**: Ingeniería de Software 3  
-**Fecha**: Noviembre 2025  
+**Integrantes**: Paulina Ortiz  - Delfina Salinas
 **Repositorio**: [pauliiortizz/TP8-IngSoft3](https://github.com/pauliiortizz/TP8-IngSoft3)
-
----
-
-## 📑 Índice
-
-1. [Decisiones Arquitectónicas y Tecnológicas](#sección-1-decisiones-arquitectónicas-y-tecnológicas)
-2. [Implementación y Evidencias](#sección-2-implementación)
-3. [Pipeline CI/CD](#pipeline-cicd)
-
----
 
 # Sección 1: Decisiones Arquitectónicas y Tecnológicas
 
@@ -55,17 +43,6 @@
 
 **Decisión**: `ghcr.io`
 
-**Justificación**:
-
-| Criterio | GHCR | Docker Hub | Azure ACR | AWS ECR |
-|----------|------|------------|-----------|---------|
-| **Costo** | ✅ Gratis ilimitado | ⚠️ 1 repo privado | ❌ ~$5/mes | ❌ $0.10/GB |
-| **Integración GitHub** | ✅ Nativa | ⚠️ Requiere config | ⚠️ Compleja | ⚠️ Compleja |
-| **Autenticación** | ✅ GITHUB_TOKEN o PAT | ❌ Username/password | ❌ Service Principal | ❌ IAM roles |
-| **Velocidad** | ✅ Muy rápida | ⚠️ Rate limits | ✅ Rápida | ✅ Rápida |
-| **Setup** | ✅ 5 minutos | ⚠️ 15 minutos | ❌ 30+ minutos | ❌ 30+ minutos |
-| **Versionado** | ✅ Tags automáticos | ✅ Manual | ✅ Manual | ✅ Manual |
-
 **Ventajas específicas para este proyecto**:
 1. **Integración perfecta**: El código ya está en GitHub, usar GHCR es natural
 2. **Cero configuración externa**: No requiere cuentas adicionales en Azure/AWS
@@ -85,18 +62,6 @@
 
 **Decisión**: Render.com para ambos ambientes
 
-**Justificación**:
-
-| Criterio | Render.com | Azure Container Instances | AWS App Runner | Fly.io | Railway |
-|----------|------------|---------------------------|----------------|--------|---------|
-| **Costo** | ✅ Gratis 750h/mes | ❌ ~$30/mes | ❌ ~$5/mes | ✅ Gratis (límites) | ⚠️ $5/mes |
-| **Setup** | ✅ 5 min UI | ❌ CLI + Portal | ⚠️ CLI + Console | ⚠️ CLI required | ✅ UI simple |
-| **Deploy desde GHCR** | ✅ Nativo | ✅ Soportado | ✅ Soportado | ✅ Soportado | ✅ Soportado |
-| **Webhooks CI/CD** | ✅ Deploy hooks | ❌ No nativo | ⚠️ Limitado | ⚠️ Limitado | ✅ Webhooks |
-| **SSL** | ✅ Automático | ⚠️ Manual | ✅ Automático | ✅ Automático | ✅ Automático |
-| **Logs en tiempo real** | ✅ Dashboard | ⚠️ CLI/Portal | ⚠️ CloudWatch | ✅ Dashboard | ✅ Dashboard |
-| **Tarjeta de crédito** | ❌ No requerida | ✅ Requerida | ✅ Requerida | ✅ Requerida | ⚠️ Opcional |
-
 **Ventajas específicas**:
 1. **Tier gratuito generoso**: 750 horas/mes por servicio = suficiente para 2 ambientes
 2. **Deploy hooks nativos**: Integración perfecta con GitHub Actions mediante webhooks
@@ -105,28 +70,9 @@
 5. **Logs accesibles**: No requiere CLI ni comandos complejos
 6. **HTTPS automático**: Certificados SSL gestionados automáticamente
 
-**Desventajas aceptadas**:
-- ⚠️ Cold starts en tier gratuito (~30 segundos de inactividad)
-- ⚠️ Menor control de infraestructura que Azure/AWS
-- ⚠️ Sin auto-scaling horizontal en tier gratuito
-
----
-
 ### 3️⃣ **CI/CD: GitHub Actions**
 
 **Decisión**: GitHub Actions
-
-**Justificación**:
-
-| Criterio | GitHub Actions | Azure DevOps | GitLab CI | Jenkins |
-|----------|----------------|--------------|-----------|---------|
-| **Costo** | ✅ 2000 min/mes gratis | ✅ 1800 min/mes gratis | ✅ 400 min/mes gratis | ✅ Self-hosted |
-| **Integración GitHub** | ✅ Nativa | ⚠️ Requiere config | ⚠️ Mirror repo | ⚠️ Webhooks |
-| **Integración GHCR** | ✅ Token automático | ⚠️ Config manual | ⚠️ Config manual | ❌ Complejo |
-| **Configuración** | ✅ YAML simple | ⚠️ YAML + UI | ✅ YAML | ❌ UI compleja |
-| **Marketplace** | ✅ 18,000+ actions | ⚠️ 1,500+ tasks | ⚠️ Templates | ⚠️ Plugins |
-| **Environments** | ✅ Approval gates | ✅ Approval gates | ✅ Approval gates | ⚠️ Plugins |
-| **Learning curve** | ✅ Baja | ⚠️ Media | ✅ Baja | ❌ Alta |
 
 **Ventajas específicas**:
 1. **Ecosistema unificado**: Código, registry, CI/CD en una sola plataforma (GitHub)
@@ -228,15 +174,6 @@ Stage 4: Deploy PROD (Manual approval required)
    - Environment "Production" en GitHub con required reviewers
    - Quality gate obligatorio
 
-#### 🚀 **Escalamiento futuro**:
-
-Si el proyecto crece, PROD podría migrar a:
-- **Azure Container Apps**: Autoescalado, mayor disponibilidad
-- **AWS App Runner**: Deploy global, CDN integrado
-- Pero QA se mantendría en Render para mantener costos bajos
-
----
-
 ## 💻 Configuración de Recursos
 
 ### **QA**
@@ -335,9 +272,17 @@ ghcr.io/pauliiortizz/productosapi:prod-c97b742    ← Commit SHA
 ### 📸 **Capturas requeridas**:
 
 - [ ] **Captura 1**: GitHub Packages mostrando el paquete `productosapi`
+      <img width="950" height="220" alt="image" src="https://github.com/user-attachments/assets/154c5440-fe0a-41dd-916a-2ea218c0a2e8" />
+      
 - [ ] **Captura 2**: Lista de tags (qa, qa-X, qa-sha, prod, prod-X, prod-sha)
+      <img width="753" height="535" alt="image" src="https://github.com/user-attachments/assets/b7a0d423-a323-4c63-91e0-fbb0ddcec65d" />
+
 - [ ] **Captura 3**: Detalles de una imagen (tamaño, layers, fecha)
+      <img width="816" height="364" alt="image" src="https://github.com/user-attachments/assets/199e9f47-6043-4a73-a858-602af5716dbd" />
+
 - [ ] **Captura 4**: Package settings mostrando permisos y visibilidad
+      <img width="1093" height="286" alt="image" src="https://github.com/user-attachments/assets/24b1d53e-b3f5-4e0e-8196-0351d3070970" />
+
 - [ ] **Captura 5**: GitHub Actions log mostrando push exitoso a GHCR
 
 ---
@@ -379,7 +324,7 @@ MongoDbSettings__DatabaseName=MyDB
 
 **Deploy hook configurado**:
 ```bash
-URL: https://api.render.com/deploy/srv-xxxxx?key=yyyyy
+URL: https://api.render.com/deploy/srv-d48fmqv5r7bs739h2big?key=iUvAXlAdjqw
 Configurado como: RENDER_DEPLOY_HOOK_QA (GitHub Secret)
 ```
 
@@ -390,7 +335,6 @@ Configurado como: RENDER_DEPLOY_HOOK_QA (GitHub Secret)
 - `/admin.html` - API Tester (botones de prueba)
 - `/api/Product` - API REST
 - `/health` - Health check endpoint
-- `/swagger` - Documentación API (solo en QA)
 
 **Health checks configurados**:
 ```yaml
@@ -402,14 +346,21 @@ Interval: 60s
 
 ### 📸 **Capturas requeridas**:
 
-- [ ] **Captura 1**: Render Dashboard mostrando servicio QA "Live"
-- [ ] **Captura 2**: Variables de entorno configuradas (ocultar secretos)
-- [ ] **Captura 3**: Deploy hook URL (parcialmente oculto)
-- [ ] **Captura 4**: Logs de Render mostrando deploy exitoso
-- [ ] **Captura 5**: Navegador en `https://productosapi-qa-1.onrender.com/` mostrando frontend Angular
-- [ ] **Captura 6**: Navegador en `/admin.html` mostrando API Tester
-- [ ] **Captura 7**: Response de `/api/Product` mostrando datos de MongoDB QA
-- [ ] **Captura 8**: Metrics de Render (CPU, memoria, requests)
+- [ ] Render Dashboard mostrando servicio QA "Live"
+      <img width="1003" height="477" alt="image" src="https://github.com/user-attachments/assets/24adcf3e-1bd9-428b-8d8c-aab5609e833c" />
+
+- [ ] Variables de entorno configuradas (ocultar secretos)
+      <img width="1013" height="447" alt="image" src="https://github.com/user-attachments/assets/22c556fc-9777-4168-a039-49f371b70c64" />
+
+- [ ] Navegador en `https://productosapi-qa-1.onrender.com/` mostrando frontend Angular
+      <img width="1365" height="635" alt="image" src="https://github.com/user-attachments/assets/c83e5cbe-21dc-4616-8380-e542aa1793f4" />
+
+- [ ] Navegador en `/admin.html` mostrando API Tester
+      <img width="1365" height="569" alt="image" src="https://github.com/user-attachments/assets/3998b45a-c1aa-4d96-90ad-97e5dccb283f" />
+
+- [ ] Response de `/api/Product` mostrando datos de MongoDB QA
+      <img width="1362" height="251" alt="image" src="https://github.com/user-attachments/assets/f123ddc6-ce4d-48d2-8133-d34f652a679c" />
+
 
 ---
 
@@ -480,8 +431,6 @@ Deploy PROD (después de approval)
 | Aspecto | QA | PROD |
 |---------|----|----|
 | **Base de datos** | Cluster de testing con datos de prueba | Cluster productivo con datos reales |
-| **Logging level** | `Information` (verbose) | `Warning` (menos logs) |
-| **Swagger** | ✅ Habilitado | ❌ Deshabilitado por seguridad |
 | **Deploy** | ✅ Automático tras build | ⏸️ Requiere aprobación manual |
 | **Health checks** | Verificación básica | Verificación + notificación |
 | **Rollback** | Informal (redeploy) | Formal (cambiar tag de imagen) |
@@ -506,15 +455,24 @@ Load balancing: Automático por Render
 
 ### 📸 **Capturas requeridas**:
 
-- [ ] **Captura 1**: Render Dashboard mostrando servicio PROD "Live"
-- [ ] **Captura 2**: Variables de entorno PROD (diferentes a QA)
-- [ ] **Captura 3**: Deploy hook PROD
-- [ ] **Captura 4**: Logs mostrando `ASPNETCORE_ENVIRONMENT=Production`
-- [ ] **Captura 5**: Frontend en PROD funcionando
-- [ ] **Captura 6**: API Tester en PROD
-- [ ] **Captura 7**: MongoDB PROD con datos diferentes a QA
-- [ ] **Captura 8**: Comparación lado a lado: QA vs PROD (diferentes clusters)
-- [ ] **Captura 9**: GitHub Environment "Production" con required reviewers configurado
+- [ ] Render Dashboard mostrando servicio PROD "Live"
+      <img width="990" height="484" alt="image" src="https://github.com/user-attachments/assets/40438a84-fcaf-43c2-9894-0cb410cf2238" />
+
+- [ ] Variables de entorno PROD (diferentes a QA)
+      <img width="1013" height="447" alt="image" src="https://github.com/user-attachments/assets/e4de672e-e42f-471c-8e44-b68c000ea064" />
+
+- [ ] Frontend en PROD funcionando
+      <img width="1365" height="642" alt="image" src="https://github.com/user-attachments/assets/044fdf05-dfe6-4c36-a088-f2da3eabe45d" />
+
+- [ ] API Tester en PROD
+      <img width="1365" height="624" alt="image" src="https://github.com/user-attachments/assets/b8003984-a268-45db-970e-61291587d4f6" />
+
+- [ ] MongoDB PROD con datos diferentes a QA
+      <img width="1365" height="248" alt="image" src="https://github.com/user-attachments/assets/a608a67e-a6dd-4f7f-b4b4-475ba6117eec" />
+
+- [ ] GitHub Environment "Production" con required reviewers configurado
+      <img width="832" height="267" alt="image" src="https://github.com/user-attachments/assets/213ab94a-4706-43ed-9f7b-3f9a1fb37ca3" />
+
 
 ---
 
@@ -587,7 +545,7 @@ Para cada ambiente:
 Environment: Production (required reviewers)
 - ⏸️ Espera aprobación manual
 - Trigger webhook Render PROD
-- Wait 30 segundos
+- Wait 5 minutos
 - Health check: /health
 - Verify: /admin.html
 - Notify success
@@ -596,95 +554,6 @@ Environment: Production (required reviewers)
 ### 📸 **Capturas requeridas del Pipeline**:
 
 #### **Vista general**:
-- [ ] **Captura 1**: GitHub Actions - Lista de workflows mostrando ejecuciones exitosas
-- [ ] **Captura 2**: Workflow completo expandido con todos los jobs (verde ✅)
+- [ ] Workflow completo expandido con todos los jobs (verde ✅)
+      <img width="1352" height="499" alt="image" src="https://github.com/user-attachments/assets/fcb7be93-f0ca-4944-9271-ecff3e203eb5" />
 
-#### **Stage 1: Build & Test**:
-- [ ] **Captura 3**: Job "Build & Test" expandido mostrando todos los steps
-- [ ] **Captura 4**: Logs de "Run Backend Tests" mostrando tests pasando
-- [ ] **Captura 5**: Logs de "Run Frontend Tests" 
-- [ ] **Captura 6**: Logs de "Copy Frontend to Backend wwwroot"
-- [ ] **Captura 7**: Artifacts uploaded (./publish)
-
-#### **Stage 2: Docker Build & Push**:
-- [ ] **Captura 8**: Matrix job mostrando QA y PROD en paralelo
-- [ ] **Captura 9**: Logs de "Build and Push Docker Image - qa"
-- [ ] **Captura 10**: Logs mostrando push exitoso a GHCR con 3 tags
-- [ ] **Captura 11**: Lo mismo para PROD
-
-#### **Stage 3: Deploy QA**:
-- [ ] **Captura 12**: Job "Deploy to QA" completo
-- [ ] **Captura 13**: Logs de "Trigger Render Deploy - QA" (curl POST)
-- [ ] **Captura 14**: Logs de health checks exitosos
-
-#### **Stage 4: Approval Gate**:
-- [ ] **Captura 15**: Job "Deploy to Production" en estado "Waiting" 🟡
-- [ ] **Captura 16**: Botón "Review deployments" visible
-- [ ] **Captura 17**: Modal de aprobación con Environment "Production"
-- [ ] **Captura 18**: Approval confirmada por pauliiortizz
-
-#### **Stage 5: Deploy PROD**:
-- [ ] **Captura 19**: Job "Deploy to Production" ejecutándose (azul 🔵)
-- [ ] **Captura 20**: Logs de "Trigger Render Deploy - PROD"
-- [ ] **Captura 21**: Logs de health checks PROD
-- [ ] **Captura 22**: "Notify Success" con URLs de QA y PROD
-
-#### **Verificación end-to-end**:
-- [ ] **Captura 23**: Timeline completo del workflow (desde push hasta deploy PROD)
-- [ ] **Captura 24**: Duración total del pipeline
-- [ ] **Captura 25**: Re-run del workflow mostrando consistencia
-
----
-
-## 📊 Checklist Final de Implementación
-
-### **Container Registry**
-- [x] GHCR configurado con PAT
-- [x] Imágenes QA y PROD publicadas
-- [x] Tags con versionado (latest, build number, commit SHA)
-- [ ] **Capturas del registry** (5 capturas)
-
-### **Ambiente QA**
-- [x] Servicio Render QA configurado
-- [x] Variables de entorno y secretos
-- [x] MongoDB QA funcionando
-- [x] Deploy hook configurado
-- [x] Frontend + Backend funcionando
-- [ ] **Capturas de QA** (8 capturas)
-
-### **Ambiente PROD**
-- [x] Servicio Render PROD configurado
-- [x] Variables de entorno PROD
-- [x] MongoDB PROD separado
-- [x] Deploy hook PROD
-- [x] Continuous deployment configurado
-- [ ] **Capturas de PROD** (9 capturas)
-
-### **Pipeline CI/CD**
-- [x] Workflow completo funcionando
-- [x] Build y tests automatizados
-- [x] Docker build paralelo (QA + PROD)
-- [x] Deploy automático a QA
-- [x] Approval gate para PROD configurado
-- [ ] **Capturas del pipeline** (25 capturas)
-
-### **Documentación**
-- [x] Decisiones técnicas justificadas
-- [x] Comparación de alternativas
-- [x] Diferencias QA vs PROD documentadas
-- [ ] README.md actualizado con instrucciones
-- [ ] Presentación para defensa oral
-
----
-
-## 🎯 Próximos Pasos
-
-1. ✅ **Configurar Environment "Production"** con required reviewers en GitHub
-2. 📸 **Tomar todas las capturas** según listado arriba
-3. 📝 **Crear presentación** con diagramas de arquitectura
-4. 🎤 **Preparar defensa oral** con justificaciones
-5. 📤 **Entregar TP** con evidencias completas
-
----
-
-**Última actualización**: 9 de Noviembre, 2025
