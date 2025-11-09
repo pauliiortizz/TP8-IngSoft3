@@ -1,8 +1,7 @@
 # 📋 TP8 - Decisiones Técnicas y Documentación de Implementación
 
-**Alumna**: Paula Ortiz  
-**Materia**: Ingeniería de Software 3  
-**Fecha**: Noviembre 2025  
+**Integrantes**: Paulina Ortiz - Delfina Salinas  
+**Materia**: Ingeniería de Software 3   
 **Repositorio**: [pauliiortizz/TP8-IngSoft3](https://github.com/pauliiortizz/TP8-IngSoft3)
 
 ---
@@ -55,17 +54,6 @@
 
 **Decisión**: `ghcr.io`
 
-**Justificación**:
-
-| Criterio | GHCR | Docker Hub | Azure ACR | AWS ECR |
-|----------|------|------------|-----------|---------|
-| **Costo** | ✅ Gratis ilimitado | ⚠️ 1 repo privado | ❌ ~$5/mes | ❌ $0.10/GB |
-| **Integración GitHub** | ✅ Nativa | ⚠️ Requiere config | ⚠️ Compleja | ⚠️ Compleja |
-| **Autenticación** | ✅ GITHUB_TOKEN o PAT | ❌ Username/password | ❌ Service Principal | ❌ IAM roles |
-| **Velocidad** | ✅ Muy rápida | ⚠️ Rate limits | ✅ Rápida | ✅ Rápida |
-| **Setup** | ✅ 5 minutos | ⚠️ 15 minutos | ❌ 30+ minutos | ❌ 30+ minutos |
-| **Versionado** | ✅ Tags automáticos | ✅ Manual | ✅ Manual | ✅ Manual |
-
 **Ventajas específicas para este proyecto**:
 1. **Integración perfecta**: El código ya está en GitHub, usar GHCR es natural
 2. **Cero configuración externa**: No requiere cuentas adicionales en Azure/AWS
@@ -85,18 +73,6 @@
 
 **Decisión**: Render.com para ambos ambientes
 
-**Justificación**:
-
-| Criterio | Render.com | Azure Container Instances | AWS App Runner | Fly.io | Railway |
-|----------|------------|---------------------------|----------------|--------|---------|
-| **Costo** | ✅ Gratis 750h/mes | ❌ ~$30/mes | ❌ ~$5/mes | ✅ Gratis (límites) | ⚠️ $5/mes |
-| **Setup** | ✅ 5 min UI | ❌ CLI + Portal | ⚠️ CLI + Console | ⚠️ CLI required | ✅ UI simple |
-| **Deploy desde GHCR** | ✅ Nativo | ✅ Soportado | ✅ Soportado | ✅ Soportado | ✅ Soportado |
-| **Webhooks CI/CD** | ✅ Deploy hooks | ❌ No nativo | ⚠️ Limitado | ⚠️ Limitado | ✅ Webhooks |
-| **SSL** | ✅ Automático | ⚠️ Manual | ✅ Automático | ✅ Automático | ✅ Automático |
-| **Logs en tiempo real** | ✅ Dashboard | ⚠️ CLI/Portal | ⚠️ CloudWatch | ✅ Dashboard | ✅ Dashboard |
-| **Tarjeta de crédito** | ❌ No requerida | ✅ Requerida | ✅ Requerida | ✅ Requerida | ⚠️ Opcional |
-
 **Ventajas específicas**:
 1. **Tier gratuito generoso**: 750 horas/mes por servicio = suficiente para 2 ambientes
 2. **Deploy hooks nativos**: Integración perfecta con GitHub Actions mediante webhooks
@@ -105,28 +81,9 @@
 5. **Logs accesibles**: No requiere CLI ni comandos complejos
 6. **HTTPS automático**: Certificados SSL gestionados automáticamente
 
-**Desventajas aceptadas**:
-- ⚠️ Cold starts en tier gratuito (~30 segundos de inactividad)
-- ⚠️ Menor control de infraestructura que Azure/AWS
-- ⚠️ Sin auto-scaling horizontal en tier gratuito
-
----
-
 ### 3️⃣ **CI/CD: GitHub Actions**
 
 **Decisión**: GitHub Actions
-
-**Justificación**:
-
-| Criterio | GitHub Actions | Azure DevOps | GitLab CI | Jenkins |
-|----------|----------------|--------------|-----------|---------|
-| **Costo** | ✅ 2000 min/mes gratis | ✅ 1800 min/mes gratis | ✅ 400 min/mes gratis | ✅ Self-hosted |
-| **Integración GitHub** | ✅ Nativa | ⚠️ Requiere config | ⚠️ Mirror repo | ⚠️ Webhooks |
-| **Integración GHCR** | ✅ Token automático | ⚠️ Config manual | ⚠️ Config manual | ❌ Complejo |
-| **Configuración** | ✅ YAML simple | ⚠️ YAML + UI | ✅ YAML | ❌ UI compleja |
-| **Marketplace** | ✅ 18,000+ actions | ⚠️ 1,500+ tasks | ⚠️ Templates | ⚠️ Plugins |
-| **Environments** | ✅ Approval gates | ✅ Approval gates | ✅ Approval gates | ⚠️ Plugins |
-| **Learning curve** | ✅ Baja | ⚠️ Media | ✅ Baja | ❌ Alta |
 
 **Ventajas específicas**:
 1. **Ecosistema unificado**: Código, registry, CI/CD en una sola plataforma (GitHub)
@@ -227,13 +184,6 @@ Stage 4: Deploy PROD (Manual approval required)
 4. **Aprobación manual para PROD**:
    - Environment "Production" en GitHub con required reviewers
    - Quality gate obligatorio
-
-#### 🚀 **Escalamiento futuro**:
-
-Si el proyecto crece, PROD podría migrar a:
-- **Azure Container Apps**: Autoescalado, mayor disponibilidad
-- **AWS App Runner**: Deploy global, CDN integrado
-- Pero QA se mantendría en Render para mantener costos bajos
 
 ---
 
@@ -634,57 +584,4 @@ Environment: Production (required reviewers)
 - [ ] **Captura 24**: Duración total del pipeline
 - [ ] **Captura 25**: Re-run del workflow mostrando consistencia
 
----
 
-## 📊 Checklist Final de Implementación
-
-### **Container Registry**
-- [x] GHCR configurado con PAT
-- [x] Imágenes QA y PROD publicadas
-- [x] Tags con versionado (latest, build number, commit SHA)
-- [ ] **Capturas del registry** (5 capturas)
-
-### **Ambiente QA**
-- [x] Servicio Render QA configurado
-- [x] Variables de entorno y secretos
-- [x] MongoDB QA funcionando
-- [x] Deploy hook configurado
-- [x] Frontend + Backend funcionando
-- [ ] **Capturas de QA** (8 capturas)
-
-### **Ambiente PROD**
-- [x] Servicio Render PROD configurado
-- [x] Variables de entorno PROD
-- [x] MongoDB PROD separado
-- [x] Deploy hook PROD
-- [x] Continuous deployment configurado
-- [ ] **Capturas de PROD** (9 capturas)
-
-### **Pipeline CI/CD**
-- [x] Workflow completo funcionando
-- [x] Build y tests automatizados
-- [x] Docker build paralelo (QA + PROD)
-- [x] Deploy automático a QA
-- [x] Approval gate para PROD configurado
-- [ ] **Capturas del pipeline** (25 capturas)
-
-### **Documentación**
-- [x] Decisiones técnicas justificadas
-- [x] Comparación de alternativas
-- [x] Diferencias QA vs PROD documentadas
-- [ ] README.md actualizado con instrucciones
-- [ ] Presentación para defensa oral
-
----
-
-## 🎯 Próximos Pasos
-
-1. ✅ **Configurar Environment "Production"** con required reviewers en GitHub
-2. 📸 **Tomar todas las capturas** según listado arriba
-3. 📝 **Crear presentación** con diagramas de arquitectura
-4. 🎤 **Preparar defensa oral** con justificaciones
-5. 📤 **Entregar TP** con evidencias completas
-
----
-
-**Última actualización**: 9 de Noviembre, 2025
