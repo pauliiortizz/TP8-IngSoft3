@@ -1,0 +1,58 @@
+# Archivos y carpetas a ignorar en el build de Docker
+
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+**/testpublish/
+
+# VS Code
+.vscode/
+.vs/
+
+# Git
+.git/
+.gitignore
+
+# Node modules (si no se necesitan en el backend)
+**/node_modules/
+
+# Tests
+**/test-results/
+**/*.trx
+
+# Documentation
+*.md
+!README.md
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Temporary files
+**/*.swp
+**/*.bak
+**/*.tmp
+
+# Logs
+**/*.log
+
+# Azure Pipelines
+azure-pipelines*.yml
+
+# Docker
+Dockerfile*
+.dockerignore
+docker-compose*.yml
+
+# Scripts
+*.bat
+*.sh
+
+# Coverage
+**/coverage/
+
+# Cypress
+**/cypress/
+cypress.config.js

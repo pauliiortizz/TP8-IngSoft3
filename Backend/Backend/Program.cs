@@ -80,7 +80,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 // Sirve el tester admin en /admin
 app.MapGet("/admin", context =>
 {
-    context.Response.Redirect("/admin/index.html");
+    context.Response.Redirect("/admin.html");
     return Task.CompletedTask;
 });
 
