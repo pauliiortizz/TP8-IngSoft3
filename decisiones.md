@@ -4,16 +4,6 @@
 **Materia**: Ingeniería de Software 3   
 **Repositorio**: [pauliiortizz/TP8-IngSoft3](https://github.com/pauliiortizz/TP8-IngSoft3)
 
----
-
-## 📑 Índice
-
-1. [Decisiones Arquitectónicas y Tecnológicas](#sección-1-decisiones-arquitectónicas-y-tecnológicas)
-2. [Implementación y Evidencias](#sección-2-implementación)
-3. [Pipeline CI/CD](#pipeline-cicd)
-
----
-
 # Sección 1: Decisiones Arquitectónicas y Tecnológicas
 
 ## 🛠️ Stack Tecnológico
@@ -285,9 +275,17 @@ ghcr.io/pauliiortizz/productosapi:prod-c97b742    ← Commit SHA
 ### 📸 **Capturas requeridas**:
 
 - [ ] **Captura 1**: GitHub Packages mostrando el paquete `productosapi`
+      <img width="950" height="220" alt="image" src="https://github.com/user-attachments/assets/154c5440-fe0a-41dd-916a-2ea218c0a2e8" />
+      
 - [ ] **Captura 2**: Lista de tags (qa, qa-X, qa-sha, prod, prod-X, prod-sha)
+      <img width="753" height="535" alt="image" src="https://github.com/user-attachments/assets/b7a0d423-a323-4c63-91e0-fbb0ddcec65d" />
+
 - [ ] **Captura 3**: Detalles de una imagen (tamaño, layers, fecha)
+      <img width="816" height="364" alt="image" src="https://github.com/user-attachments/assets/199e9f47-6043-4a73-a858-602af5716dbd" />
+
 - [ ] **Captura 4**: Package settings mostrando permisos y visibilidad
+      <img width="1093" height="286" alt="image" src="https://github.com/user-attachments/assets/24b1d53e-b3f5-4e0e-8196-0351d3070970" />
+
 - [ ] **Captura 5**: GitHub Actions log mostrando push exitoso a GHCR
 
 ---
@@ -329,7 +327,7 @@ MongoDbSettings__DatabaseName=MyDB
 
 **Deploy hook configurado**:
 ```bash
-URL: https://api.render.com/deploy/srv-xxxxx?key=yyyyy
+URL: https://api.render.com/deploy/srv-d48fmqv5r7bs739h2big?key=iUvAXlAdjqw
 Configurado como: RENDER_DEPLOY_HOOK_QA (GitHub Secret)
 ```
 
@@ -340,7 +338,6 @@ Configurado como: RENDER_DEPLOY_HOOK_QA (GitHub Secret)
 - `/admin.html` - API Tester (botones de prueba)
 - `/api/Product` - API REST
 - `/health` - Health check endpoint
-- `/swagger` - Documentación API (solo en QA)
 
 **Health checks configurados**:
 ```yaml
@@ -352,14 +349,21 @@ Interval: 60s
 
 ### 📸 **Capturas requeridas**:
 
-- [ ] **Captura 1**: Render Dashboard mostrando servicio QA "Live"
-- [ ] **Captura 2**: Variables de entorno configuradas (ocultar secretos)
-- [ ] **Captura 3**: Deploy hook URL (parcialmente oculto)
-- [ ] **Captura 4**: Logs de Render mostrando deploy exitoso
-- [ ] **Captura 5**: Navegador en `https://productosapi-qa-1.onrender.com/` mostrando frontend Angular
-- [ ] **Captura 6**: Navegador en `/admin.html` mostrando API Tester
-- [ ] **Captura 7**: Response de `/api/Product` mostrando datos de MongoDB QA
-- [ ] **Captura 8**: Metrics de Render (CPU, memoria, requests)
+- [ ] Render Dashboard mostrando servicio QA "Live"
+      <img width="1003" height="477" alt="image" src="https://github.com/user-attachments/assets/24adcf3e-1bd9-428b-8d8c-aab5609e833c" />
+
+- [ ] Variables de entorno configuradas (ocultar secretos)
+      <img width="1013" height="447" alt="image" src="https://github.com/user-attachments/assets/22c556fc-9777-4168-a039-49f371b70c64" />
+
+- [ ] Navegador en `https://productosapi-qa-1.onrender.com/` mostrando frontend Angular
+      <img width="1365" height="635" alt="image" src="https://github.com/user-attachments/assets/c83e5cbe-21dc-4616-8380-e542aa1793f4" />
+
+- [ ] Navegador en `/admin.html` mostrando API Tester
+      <img width="1365" height="569" alt="image" src="https://github.com/user-attachments/assets/3998b45a-c1aa-4d96-90ad-97e5dccb283f" />
+
+- [ ] Response de `/api/Product` mostrando datos de MongoDB QA
+      <img width="1362" height="251" alt="image" src="https://github.com/user-attachments/assets/f123ddc6-ce4d-48d2-8133-d34f652a679c" />
+
 
 ---
 
@@ -430,8 +434,6 @@ Deploy PROD (después de approval)
 | Aspecto | QA | PROD |
 |---------|----|----|
 | **Base de datos** | Cluster de testing con datos de prueba | Cluster productivo con datos reales |
-| **Logging level** | `Information` (verbose) | `Warning` (menos logs) |
-| **Swagger** | ✅ Habilitado | ❌ Deshabilitado por seguridad |
 | **Deploy** | ✅ Automático tras build | ⏸️ Requiere aprobación manual |
 | **Health checks** | Verificación básica | Verificación + notificación |
 | **Rollback** | Informal (redeploy) | Formal (cambiar tag de imagen) |
@@ -456,15 +458,24 @@ Load balancing: Automático por Render
 
 ### 📸 **Capturas requeridas**:
 
-- [ ] **Captura 1**: Render Dashboard mostrando servicio PROD "Live"
-- [ ] **Captura 2**: Variables de entorno PROD (diferentes a QA)
-- [ ] **Captura 3**: Deploy hook PROD
-- [ ] **Captura 4**: Logs mostrando `ASPNETCORE_ENVIRONMENT=Production`
-- [ ] **Captura 5**: Frontend en PROD funcionando
-- [ ] **Captura 6**: API Tester en PROD
-- [ ] **Captura 7**: MongoDB PROD con datos diferentes a QA
-- [ ] **Captura 8**: Comparación lado a lado: QA vs PROD (diferentes clusters)
-- [ ] **Captura 9**: GitHub Environment "Production" con required reviewers configurado
+- [ ] Render Dashboard mostrando servicio PROD "Live"
+      <img width="990" height="484" alt="image" src="https://github.com/user-attachments/assets/40438a84-fcaf-43c2-9894-0cb410cf2238" />
+
+- [ ] Variables de entorno PROD (diferentes a QA)
+      <img width="1013" height="447" alt="image" src="https://github.com/user-attachments/assets/e4de672e-e42f-471c-8e44-b68c000ea064" />
+
+- [ ] Frontend en PROD funcionando
+      <img width="1365" height="642" alt="image" src="https://github.com/user-attachments/assets/044fdf05-dfe6-4c36-a088-f2da3eabe45d" />
+
+- [ ] API Tester en PROD
+      <img width="1365" height="624" alt="image" src="https://github.com/user-attachments/assets/b8003984-a268-45db-970e-61291587d4f6" />
+
+- [ ] MongoDB PROD con datos diferentes a QA
+      <img width="1365" height="248" alt="image" src="https://github.com/user-attachments/assets/a608a67e-a6dd-4f7f-b4b4-475ba6117eec" />
+
+- [ ] GitHub Environment "Production" con required reviewers configurado
+      <img width="832" height="267" alt="image" src="https://github.com/user-attachments/assets/213ab94a-4706-43ed-9f7b-3f9a1fb37ca3" />
+
 
 ---
 
@@ -537,7 +548,7 @@ Para cada ambiente:
 Environment: Production (required reviewers)
 - ⏸️ Espera aprobación manual
 - Trigger webhook Render PROD
-- Wait 30 segundos
+- Wait 5 minutos
 - Health check: /health
 - Verify: /admin.html
 - Notify success
