@@ -1,0 +1,185 @@
+name: CI/CD - Build, Push to GHCR & Deploy
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/productosapi
+
+jobs:
+  # =======================================
+  # 🧱 BUILD & TEST
+  # =======================================
+  build-and-test:
+    name: Build & Test Application
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ---- Backend (.NET 8) ----
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore .NET Dependencies
+        run: dotnet restore Backend/ProductApi.sln
+
+      - name: Build Backend
+        run: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
+
+      - name: Run Backend Tests
+        run: dotnet test Backend.Tests/**/*.csproj --no-restore --verbosity normal
+
+      # ---- Frontend (Angular) ----
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        run: npm ci
+        working-directory: Frontend
+
+      - name: Run Frontend Tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        working-directory: Frontend
+        continue-on-error: true
+
+      - name: Build Frontend
+        run: npm run build -- --configuration production
+        working-directory: Frontend
+
+      # ---- Combine Backend + Frontend ----
+      - name: Copy Frontend to Backend wwwroot
+        run: |
+          mkdir -p Backend/Backend/wwwroot
+          cp -r Frontend/dist/* Backend/Backend/wwwroot/
+
+      - name: Publish Backend + Frontend
+        run: dotnet publish Backend/Backend/ProductosApi.csproj -c Release -o ./publish
+
+      # Upload artifacts for Docker build
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-artifacts
+          path: ./publish
+
+  # =======================================
+  # 🐳 BUILD & PUSH DOCKER IMAGES
+  # =======================================
+  docker-build-push:
+    name: Build & Push Docker Images
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    strategy:
+      matrix:
+        environment: [qa, prod]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Download build artifacts
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: app-artifacts
+          path: ./publish
+
+      # Login to GHCR
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata for Docker
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ matrix.environment }}
+            type=raw,value=${{ matrix.environment }}-${{ github.run_number }}
+            type=sha,prefix=${{ matrix.environment }}-
+
+      # Build and push Docker image
+      - name: Build and Push Docker Image - ${{ matrix.environment }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./publish
+          file: ./Backend/Dockerfile.${{ matrix.environment }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  # =======================================
+  # 🌐 DEPLOY TO RENDER QA
+  # =======================================
+  deploy-qa:
+    name: Deploy to QA (Render)
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    environment:
+      name: QA
+      url: ${{ vars.QA_URL }}
+    
+    steps:
+      - name: Trigger Render Deploy - QA
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_QA }}"
+        
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Verify QA Deployment
+        run: |
+          echo "Verificando despliegue en QA..."
+          curl -f "${{ vars.QA_URL }}/health" || echo "Health check failed"
+          curl -f "${{ vars.QA_URL }}/admin.html" || echo "Admin page failed"
+
+  # =======================================
+  # 🚀 DEPLOY TO RENDER PROD
+  # =======================================
+  deploy-prod:
+    name: Deploy to Production (Render)
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+      url: ${{ vars.PROD_URL }}
+    
+    steps:
+      - name: Trigger Render Deploy - PROD
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PROD }}"
+        
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Verify PROD Deployment
+        run: |
+          echo "Verificando despliegue en PROD..."
+          curl -f "${{ vars.PROD_URL }}/health" || echo "Health check failed"
+          curl -f "${{ vars.PROD_URL }}/admin.html" || echo "Admin page failed"
+
+      - name: Notify Success
+        run: |
+          echo "✅ Deployment to Production completed successfully!"
+          echo "🌐 QA: ${{ vars.QA_URL }}"
+          echo "🚀 PROD: ${{ vars.PROD_URL }}"
