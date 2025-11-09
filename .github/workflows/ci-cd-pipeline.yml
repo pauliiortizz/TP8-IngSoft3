@@ -37,6 +37,9 @@ jobs:
       - name: Build Backend
         run: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
 
+      - name: Build Backend Tests
+        run: dotnet build Backend.Tests/EmployeeCrudApi.Tests.csproj --configuration Release --no-restore
+
       - name: Run Backend Tests
         run: dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj --configuration Release --no-build --verbosity normal
 
