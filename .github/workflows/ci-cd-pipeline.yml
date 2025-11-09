@@ -36,7 +36,7 @@ jobs:
         run: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
 
       - name: Run Backend Tests
-        run: dotnet test Backend.Tests/**/*.csproj --no-restore --verbosity normal
+        run: dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj --no-restore --verbosity normal
 
       # ---- Frontend (Angular) ----
       - name: Setup Node.js
