@@ -152,8 +152,6 @@ Stage 4: Deploy PROD (Manual approval required)
 | **URL pública** | `https://productosapi-qa-1.onrender.com` | `https://productosapi-prod-1.onrender.com` |
 | **Deploy automático** | ✅ Inmediato tras build | ⏸️ Requiere aprobación manual |
 | **Health checks** | ✅ Verificación básica | ✅ Verificación + notificación |
-| **Recursos** | 512MB RAM, 0.1 CPU (Free tier) | 512MB RAM, 0.1 CPU (Free tier) |
-| **Logging level** | `Information` | `Warning` (menos verboso) |
 
 #### 🔐 **Segregación implementada**:
 
@@ -403,7 +401,7 @@ MongoDbSettings__DatabaseName=MyDB-PROD
 
 **Deploy hook configurado**:
 ```bash
-URL: https://api.render.com/deploy/srv-zzzzz?key=wwwww
+URL: https://api.render.com/deploy/srv-d48fo04hg0os7388sdo0?key=oTbaXz_Oj_8
 Configurado como: RENDER_DEPLOY_HOOK_PROD (GitHub Secret)
 ```
 
@@ -491,7 +489,7 @@ on:
   workflow_dispatch:  # Manual trigger
 ```
 
-### **Stage 1: Build & Test** (5-8 minutos)
+### **Stage 1: Build & Test** 
 
 **Backend (.NET 8)**:
 ```yaml
@@ -518,7 +516,7 @@ on:
 - Upload artifacts (./publish)
 ```
 
-### **Stage 2: Docker Build & Push** (3-5 minutos)
+### **Stage 2: Docker Build & Push** 
 
 **Matrix strategy**: `[qa, prod]` (paralelo)
 
@@ -533,7 +531,7 @@ Para cada ambiente:
   - Push a ghcr.io
 ```
 
-### **Stage 3: Deploy QA** (1-2 minutos)
+### **Stage 3: Deploy QA** 
 
 ```yaml
 - Trigger webhook Render QA
@@ -555,44 +553,8 @@ Environment: Production (required reviewers)
 ```
 
 ### 📸 **Capturas requeridas del Pipeline**:
+- [ ] Workflow completo expandido con todos los jobs 
+      <img width="1352" height="499" alt="Captura de pantalla 2025-11-09 194546" src="https://github.com/user-attachments/assets/1a8383ac-c3d9-4004-8c8f-2ff7a323e7ac" />
 
-#### **Vista general**:
-- [ ] **Captura 1**: GitHub Actions - Lista de workflows mostrando ejecuciones exitosas
-- [ ] **Captura 2**: Workflow completo expandido con todos los jobs (verde ✅)
-
-#### **Stage 1: Build & Test**:
-- [ ] **Captura 3**: Job "Build & Test" expandido mostrando todos los steps
-- [ ] **Captura 4**: Logs de "Run Backend Tests" mostrando tests pasando
-- [ ] **Captura 5**: Logs de "Run Frontend Tests" 
-- [ ] **Captura 6**: Logs de "Copy Frontend to Backend wwwroot"
-- [ ] **Captura 7**: Artifacts uploaded (./publish)
-
-#### **Stage 2: Docker Build & Push**:
-- [ ] **Captura 8**: Matrix job mostrando QA y PROD en paralelo
-- [ ] **Captura 9**: Logs de "Build and Push Docker Image - qa"
-- [ ] **Captura 10**: Logs mostrando push exitoso a GHCR con 3 tags
-- [ ] **Captura 11**: Lo mismo para PROD
-
-#### **Stage 3: Deploy QA**:
-- [ ] **Captura 12**: Job "Deploy to QA" completo
-- [ ] **Captura 13**: Logs de "Trigger Render Deploy - QA" (curl POST)
-- [ ] **Captura 14**: Logs de health checks exitosos
-
-#### **Stage 4: Approval Gate**:
-- [ ] **Captura 15**: Job "Deploy to Production" en estado "Waiting" 🟡
-- [ ] **Captura 16**: Botón "Review deployments" visible
-- [ ] **Captura 17**: Modal de aprobación con Environment "Production"
-- [ ] **Captura 18**: Approval confirmada por pauliiortizz
-
-#### **Stage 5: Deploy PROD**:
-- [ ] **Captura 19**: Job "Deploy to Production" ejecutándose (azul 🔵)
-- [ ] **Captura 20**: Logs de "Trigger Render Deploy - PROD"
-- [ ] **Captura 21**: Logs de health checks PROD
-- [ ] **Captura 22**: "Notify Success" con URLs de QA y PROD
-
-#### **Verificación end-to-end**:
-- [ ] **Captura 23**: Timeline completo del workflow (desde push hasta deploy PROD)
-- [ ] **Captura 24**: Duración total del pipeline
-- [ ] **Captura 25**: Re-run del workflow mostrando consistencia
 
 
