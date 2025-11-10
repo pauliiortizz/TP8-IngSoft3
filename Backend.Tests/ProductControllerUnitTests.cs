@@ -163,5 +163,174 @@ namespace EmployeeCrudApi.Tests
             var result = await controller.Update(new Product { Id = 999, Name = "X" });
             Assert.IsType<NotFoundResult>(result);
         }
+
+        // =======================================
+        // PRICE VALIDATION TESTS
+        // =======================================
+
+        [Fact]
+        public async Task Create_NegativePrice_ReturnsBadRequest()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Create(new Product 
+            { 
+                Id = 0, 
+                Name = "Test Product", 
+                Stock = 10, 
+                Price = -5 
+            });
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            var error = badRequest.Value;
+            Assert.NotNull(error);
+        }
+
+        [Fact]
+        public async Task Create_PriceOver1000_ReturnsBadRequest()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Create(new Product 
+            { 
+                Id = 0, 
+                Name = "Expensive Product", 
+                Stock = 5, 
+                Price = 1500 
+            });
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+            var error = badRequest.Value;
+            Assert.NotNull(error);
+        }
+
+        [Fact]
+        public async Task Create_ValidPrice_ReturnsOk()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Create(new Product 
+            { 
+                Id = 0, 
+                Name = "Valid Product", 
+                Stock = 20, 
+                Price = 99.99m 
+            });
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var product = Assert.IsType<Product>(ok.Value);
+            Assert.Equal(99.99m, product.Price);
+        }
+
+        [Fact]
+        public async Task Create_PriceZero_ReturnsOk()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Create(new Product 
+            { 
+                Id = 0, 
+                Name = "Free Product", 
+                Stock = 50, 
+                Price = 0 
+            });
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var product = Assert.IsType<Product>(ok.Value);
+            Assert.Equal(0, product.Price);
+        }
+
+        [Fact]
+        public async Task Create_PriceAt1000_ReturnsOk()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Create(new Product 
+            { 
+                Id = 0, 
+                Name = "Max Price Product", 
+                Stock = 10, 
+                Price = 1000 
+            });
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var product = Assert.IsType<Product>(ok.Value);
+            Assert.Equal(1000, product.Price);
+        }
+
+        [Fact]
+        public async Task Update_NegativePrice_ReturnsBadRequest()
+        {
+            var repo = new FakeProductRepository(new[] 
+            { 
+                new Product { Id = 100, Name = "Existing Product", Stock = 10, Price = 50 } 
+            });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Update(new Product 
+            { 
+                Id = 100, 
+                Name = "Updated Product", 
+                Stock = 15, 
+                Price = -10 
+            });
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Update_PriceOver1000_ReturnsBadRequest()
+        {
+            var repo = new FakeProductRepository(new[] 
+            { 
+                new Product { Id = 101, Name = "Existing Product", Stock = 10, Price = 50 } 
+            });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Update(new Product 
+            { 
+                Id = 101, 
+                Name = "Updated Product", 
+                Stock = 15, 
+                Price = 2000 
+            });
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Update_ValidPrice_ReturnsOk()
+        {
+            var repo = new FakeProductRepository(new[] 
+            { 
+                new Product { Id = 102, Name = "Existing Product", Stock = 10, Price = 50 } 
+            });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Update(new Product 
+            { 
+                Id = 102, 
+                Name = "Updated Product", 
+                Stock = 15, 
+                Price = 199.99m 
+            });
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var product = Assert.IsType<Product>(ok.Value);
+            Assert.Equal(199.99m, product.Price);
+        }
     }
 }

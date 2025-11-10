@@ -20,8 +20,8 @@ namespace EmployeeCrudApi.Models
         [Range(0, 100)]
         public int Stock { get; set; } = 0;
 
-        // Price of the product
-        [Range(0, double.MaxValue)]
+        // Price of the product (0 to 1000)
+        [Range(0, 1000)]
         public decimal Price { get; set; } = 0;
     }
 }

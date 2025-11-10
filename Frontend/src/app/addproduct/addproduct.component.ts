@@ -93,7 +93,10 @@ export class AddemployeeComponent implements OnInit {
       return { valid: false, error: 'El precio es obligatorio' };
     }
     if (employee.price < 0) {
-      return { valid: false, error: 'El precio debe ser mayor o igual a 0' };
+      return { valid: false, error: 'El precio no puede ser negativo' };
+    }
+    if (employee.price > 1000) {
+      return { valid: false, error: 'El precio no puede ser mayor a 1000' };
     }
 
     let name = employee.name.replace(/\u00A0/g, ' ').trim().replace(/\s+/g, ' ');

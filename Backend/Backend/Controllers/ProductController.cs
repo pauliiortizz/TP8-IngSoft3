@@ -39,6 +39,10 @@ namespace EmployeeCrudApi.Controllers
         {
             if (!ModelState.IsValid) { _logger.LogWarning("Invalid model state on Create"); return BadRequest(ModelState); }
             if (product.Stock < 0 || product.Stock > 100) return BadRequest(new { error = "Stock must be between 0 and 100" });
+            
+            // Validate price
+            if (product.Price < 0) return BadRequest(new { error = "Price cannot be negative" });
+            if (product.Price > 1000) return BadRequest(new { error = "Price cannot exceed 1000" });
 
             if (string.IsNullOrWhiteSpace(product.Name)) return BadRequest(new { error = "Name is required" });
 
@@ -101,6 +105,10 @@ namespace EmployeeCrudApi.Controllers
             if (existing == null) { _logger.LogWarning("Update not found for id {Id}", product.Id); return NotFound(); }
             if (!ModelState.IsValid) { _logger.LogWarning("Invalid model state on Update for id {Id}", product.Id); return BadRequest(ModelState); }
             if (product.Stock < 0 || product.Stock > 100) return BadRequest(new { error = "Stock must be between 0 and 100" });
+            
+            // Validate price
+            if (product.Price < 0) return BadRequest(new { error = "Price cannot be negative" });
+            if (product.Price > 1000) return BadRequest(new { error = "Price cannot exceed 1000" });
 
             if (string.IsNullOrWhiteSpace(product.Name)) return BadRequest(new { error = "Name is required" });
             if (product.Name.Any(char.IsDigit)) return BadRequest(new { error = "Name must not contain digits" });
