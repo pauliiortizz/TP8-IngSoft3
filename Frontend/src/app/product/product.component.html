@@ -36,6 +36,7 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Stock</th>
+            <th>Precio</th>
             <th>Fecha creación</th>
             <th></th>
             <th><img src="assets/images/loading.gif" [style.display]="imgLoadingDisplay"></th>
@@ -49,6 +50,9 @@
             </td>
             <td class="align-middle">
                 {{product.stock}}
+            </td>
+            <td class="align-middle">
+                ${{product.price | number:'1.2-2'}}
             </td>
             <td class="align-middle">
                 {{product.createdDate}}

@@ -9,9 +9,11 @@ export class Employee {
 // Product kept for semantic use in the UI; same shape as Employee
 export class Product extends Employee {
   public stock: number = 0;
+  public price: number = 0;
 
-  constructor(id: number, name: string, createdDate?: string, stock: number = 0) {
+  constructor(id: number, name: string, createdDate?: string, stock: number = 0, price: number = 0) {
     super(id, name, createdDate);
     this.stock = stock;
+    this.price = price;
   }
 }
