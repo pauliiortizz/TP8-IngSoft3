@@ -3,24 +3,186 @@
         background-color: #f7f9fb;
     }
     .header-bar {
-        background: linear-gradient(90deg,#0d6efd,#6610f2);
-        color: white;
-        padding: 12px;
-        border-radius: 6px;
+        background: linear-gradient(135deg, #d4c5f9, #ffd6e8);
+        color: #6b5b7b;
+        padding: 16px 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(184, 164, 212, 0.2);
     }
     .btn-accent {
         background-color: #20c997;
         border-color: #20c997;
         color: white;
     }
+    
+    /* Cards Grid Layout */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 10px;
+    }
+    
+    /* Product Card Styles */
+    .product-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(184, 164, 212, 0.15);
+        transition: all 0.3s ease;
+        border: 2px solid rgba(184, 164, 212, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .product-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #d4c5f9, #ffc1cc, #ffd9a0);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(184, 164, 212, 0.25);
+        border-color: rgba(184, 164, 212, 0.4);
+    }
+    
+    .product-card-header {
+        border-bottom: 2px solid rgba(184, 164, 212, 0.15);
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .product-id {
+        display: inline-block;
+        background: linear-gradient(135deg, #d4c5f9, #c9e4ff);
+        color: #6b5b7b;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .product-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #6b5b7b;
+        margin: 8px 0;
+        font-family: 'Quicksand', sans-serif;
+    }
+    
+    .product-info {
+        margin: 12px 0;
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(184, 164, 212, 0.1);
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-size: 13px;
+        color: #8b7b9b;
+        font-weight: 500;
+    }
+    
+    .info-value {
+        font-size: 14px;
+        color: #5a4a6a;
+        font-weight: 600;
+    }
+    
+    .price-value {
+        color: #b8a4d4;
+        font-size: 16px;
+        font-weight: 700;
+    }
+    
+    .stock-value {
+        background: #b8e6d5;
+        padding: 4px 10px;
+        border-radius: 8px;
+        color: #2d6a5a;
+        font-weight: 600;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 12px;
+        border-top: 2px solid rgba(184, 164, 212, 0.15);
+    }
+    
+    .product-actions button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    
+    .btn-edit {
+        background: linear-gradient(135deg, #c9e4ff, #b8e6d5);
+        color: #2d6a5a;
+    }
+    
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(185, 228, 213, 0.4);
+    }
+    
+    .btn-delete {
+        background: linear-gradient(135deg, #ffc1cc, #ffd9a0);
+        color: #8b5b5b;
+    }
+    
+    .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 193, 204, 0.4);
+    }
+    
+    .loading-container {
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8b7b9b;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #d4c5f9;
+    }
 </style>
 
     <div class="w-100">
-    <div class="header-bar mb-2">
+    <div class="header-bar mb-3">
         <div class="d-flex align-items-center">
             <h4 class="mb-0">Productos</h4>
             <div class="ml-auto d-flex align-items-center header-controls">
-                <!-- Restablecer button removed per request -->
                 <button type="button" class="btn-corp ml-3" (click)="addEmployee()">Agregar producto</button>
             </div>
         </div>
@@ -31,42 +193,53 @@
             <input #searchInputMain type="search" placeholder="Buscar productos..." class="form-control" style="width:100%; height:44px" (input)="searchItem(searchInputMain.value)">
         </div>
 
-    <table class="table table-hover shadow-sm">
-        <tr class="table-header">
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Stock</th>
-            <th>Precio</th>
-            <th>Fecha creación</th>
-            <th></th>
-            <th><img src="assets/images/loading.gif" [style.display]="imgLoadingDisplay"></th>
-        </tr>
-        <tr *ngFor="let product of employees | async; let odd=odd;" [class.rowGrayBg]="odd" [class.show]="visibleIds.has(product.id)">
-            <td class="align-middle">
-                {{product.id}}
-            </td>
-            <td class="align-middle">
-                {{product.name}}
-            </td>
-            <td class="align-middle">
-                {{product.stock}}
-            </td>
-            <td class="align-middle">
-                ${{product.price | number:'1.2-2'}}
-            </td>
-            <td class="align-middle">
-                {{product.createdDate}}
-            </td>
-                        <td>
-                                <button class="btn btn-sm btn-action btn-edit" (click)="editEmployee(product.id)" aria-label="Editar producto">
-                                    <i class="fa fa-edit"></i>
-                                </button>
-                        </td>
-                        <td>
-                                <button class="btn btn-sm btn-action btn-delete" (click)="deleteEmployee(product.id)" aria-label="Eliminar producto">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                        </td>
-        </tr>
-    </table>
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="imgLoadingDisplay === 'inline'">
+        <img src="assets/images/loading.gif" alt="Cargando...">
+        <p>Cargando productos...</p>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid" *ngIf="imgLoadingDisplay === 'none'">
+        <div *ngFor="let product of employees | async" 
+             class="product-card fade-in-up" 
+             [class.show]="visibleIds.has(product.id)">
+            
+            <div class="product-card-header">
+                <span class="product-id">ID: {{product.id}}</span>
+                <h3 class="product-name">{{product.name}}</h3>
+            </div>
+            
+            <div class="product-info">
+                <div class="info-row">
+                    <span class="info-label">Stock:</span>
+                    <span class="info-value stock-value">{{product.stock}} unidades</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Precio:</span>
+                    <span class="info-value price-value">${{product.price | number:'1.2-2'}}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Fecha creación:</span>
+                    <span class="info-value">{{product.createdDate}}</span>
+                </div>
+            </div>
+            
+            <div class="product-actions">
+                <button class="btn-edit" (click)="editEmployee(product.id)" aria-label="Editar producto">
+                    <i class="fa fa-edit"></i> Editar
+                </button>
+                <button class="btn-delete" (click)="deleteEmployee(product.id)" aria-label="Eliminar producto">
+                    <i class="fa fa-trash"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="(employees | async)?.length === 0 && imgLoadingDisplay === 'none'">
+        <i class="fa fa-inbox"></i>
+        <h3>No hay productos</h3>
+        <p>Comienza agregando tu primer producto</p>
+    </div>
 </div>
