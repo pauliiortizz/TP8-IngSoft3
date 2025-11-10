@@ -26,7 +26,8 @@
   <div style="margin-top:12px">
     <label>Id: <input id="id" type="number" value="1" style="width:80px"></label>
     <label style="margin-left:12px">Name: <input id="name" type="text" value="Prueba"></label>
-    <label style="margin-left:12px">Amount: <input id="amount" type="number" value="1" style="width:80px"></label>
+    <label style="margin-left:12px">Stock: <input id="stock" type="number" value="10" style="width:80px" min="0" max="100"></label>
+    <label style="margin-left:12px">Price: <input id="price" type="number" value="99.99" style="width:100px" min="0" max="1000" step="0.01"></label>
   </div>
 
   <h3>Output</h3>
@@ -37,8 +38,21 @@
     function show(o){ document.getElementById('out').textContent = typeof o === 'string' ? o : JSON.stringify(o, null, 2); }
     async function apiGetAll(){ const r = await fetch(base); show(await r.json()); }
     async function apiGetById(){ const id = document.getElementById('id').value; const r = await fetch(base + '/' + id); show(r.status === 204 ? 'No Content (not found)' : await r.json()); }
-    async function apiPost(){ const name = document.getElementById('name').value; const r = await fetch(base, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})}); show({ status: r.status, body: await maybeJson(r) }); }
-    async function apiPut(){ const id = document.getElementById('id').value; const name = document.getElementById('name').value; const r = await fetch(base, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id: parseInt(id), name})}); show({ status: r.status, body: await maybeJson(r) }); }
+    async function apiPost(){ 
+      const name = document.getElementById('name').value; 
+      const stock = parseInt(document.getElementById('stock').value) || 0;
+      const price = parseFloat(document.getElementById('price').value) || 0;
+      const r = await fetch(base, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name, stock, price})}); 
+      show({ status: r.status, body: await maybeJson(r) }); 
+    }
+    async function apiPut(){ 
+      const id = document.getElementById('id').value; 
+      const name = document.getElementById('name').value; 
+      const stock = parseInt(document.getElementById('stock').value) || 0;
+      const price = parseFloat(document.getElementById('price').value) || 0;
+      const r = await fetch(base, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id: parseInt(id), name, stock, price})}); 
+      show({ status: r.status, body: await maybeJson(r) }); 
+    }
     async function apiDelete(){ const id = document.getElementById('id').value; const r = await fetch(base + '/' + id, {method:'DELETE'}); show({ status: r.status, body: r.status === 204 ? 'No Content' : await maybeJson(r) }); }
     
     // Stock helpers
