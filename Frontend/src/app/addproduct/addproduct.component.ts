@@ -14,7 +14,7 @@ import { ToastService } from '../toast.service';
   styleUrls: ['./addproduct.component.css']
 })
 export class AddemployeeComponent implements OnInit {
-  newEmployee: Product = new Product(0, '', '', 0);
+  newEmployee: Product = new Product(0, '', '', 0, 0);
   submitBtnText: string = "Crear";
   imgLoadingDisplay: string = 'none';
 
@@ -88,6 +88,14 @@ export class AddemployeeComponent implements OnInit {
       return { valid: false, error: 'El stock debe estar entre 0 y 100' };
     }
 
+    // Price validations
+    if (employee.price == null || Number.isNaN(employee.price as any)) {
+      return { valid: false, error: 'El precio es obligatorio' };
+    }
+    if (employee.price < 0) {
+      return { valid: false, error: 'El precio debe ser mayor o igual a 0' };
+    }
+
     let name = employee.name.replace(/\u00A0/g, ' ').trim().replace(/\s+/g, ' ');
   if (name.length < 2) return { valid: false, error: 'El nombre debe tener al menos 2 caracteres' };
 
@@ -120,6 +128,7 @@ export class AddemployeeComponent implements OnInit {
       this.newEmployee.id = res.id;
       this.newEmployee.name = res.name
       this.newEmployee.stock = (res as any).stock ?? 0;
+      this.newEmployee.price = (res as any).price ?? 0;
       this.submitBtnText = "Editar";
     });
   }
