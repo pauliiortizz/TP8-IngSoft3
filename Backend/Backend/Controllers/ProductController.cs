@@ -147,6 +147,7 @@ namespace EmployeeCrudApi.Controllers
 
             existing.Name = normalized;
             existing.Stock = product.Stock;
+            existing.Price = product.Price;
             var updated = await _repo.UpdateAsync(existing);
             return Ok(updated);
         }
