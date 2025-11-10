@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="28.777" tests="1" failures="1">
+  <testsuite name="Root Suite" timestamp="2025-11-10T21:50:59" tests="0" file="cypress\e2e\editProduct_test.cy.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="editProductTest" timestamp="2025-11-10T21:50:59" tests="1" time="28.776" failures="1">
+    <testcase name="editProductTest Edita correctamente un producto" time="0.000" classname="Edita correctamente un producto">
+      <failure message="Timed out retrying after 4000ms: Expected to find element: `tr:nth-child(2) td:nth-child(5) button.btn i.fa`, but never found it." type="AssertionError"><![CDATA[AssertionError: Timed out retrying after 4000ms: Expected to find element: `tr:nth-child(2) td:nth-child(5) button.btn i.fa`, but never found it.
+    at Context.eval (webpack:///./cypress/e2e/editProduct_test.cy.js:6:7)]]></failure>
+    </testcase>
+  </testsuite>
+</testsuites>
