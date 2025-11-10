@@ -62,7 +62,8 @@ export class EmployeeService {
                 item.id,
                 item.name,
                 this.formatCreatedDate(item.createdDate),
-                item.stock ?? 0
+                item.stock ?? 0,
+                item.price ?? 0
               )
           )
         )
