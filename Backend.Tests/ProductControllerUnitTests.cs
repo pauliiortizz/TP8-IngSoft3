@@ -1,5 +1,5 @@
-using EmployeeCrudApi.Controllers;
-using EmployeeCrudApi.Models;
+using ProductCrudApi.Controllers;
+using ProductCrudApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,7 +10,7 @@ using Xunit;
 using Moq;
 using Backend.Repositories;
 
-namespace EmployeeCrudApi.Tests
+namespace ProductCrudApi.Tests
 {
     public class ProductControllerUnitTests
     {
@@ -52,6 +52,226 @@ namespace EmployeeCrudApi.Tests
                 return Task.FromResult(product);
             }
         }
+
+        // =======================================
+        // CRUD BASIC TESTS
+        // =======================================
+
+        [Fact]
+        public async Task GetAll_ReturnsListOfProducts()
+        {
+            // Arrange
+            var repo = new FakeProductRepository(new[] {
+                new Product { Id = 1, Name = "John DOE" },
+                new Product { Id = 2, Name = "Jane DOE" }
+            });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            // Act
+            var result = await controller.GetAll();
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Equal("John DOE", result[0].Name);
+            Assert.Equal("Jane DOE", result[1].Name);
+        }
+
+        [Fact]
+        public async Task GetById_ReturnsProductById()
+        {
+            // Arrange
+            var repo = new FakeProductRepository(new[] { new Product { Id = 1, Name = "John DOE" } });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            // Act
+            var result = await controller.GetById(1);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(1, result.Id);
+            Assert.Equal("John DOE", result.Name);
+        }
+
+        [Fact]
+        public async Task Create_AddsProduct()
+        {
+            // Arrange
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var newProduct = new Product { Id = 3, Name = "New Product" };
+
+            // Act
+            var createResult = await controller.Create(newProduct);
+
+            // Assert
+            var list = await repo.GetAllAsync();
+            var product = list.FirstOrDefault(x => x.Id == 3);
+            Assert.NotNull(product);
+            // The controller formats names; ensure it's set (case-insensitive check)
+            Assert.Equal("New PRODUCT", product.Name);
+        }
+
+        [Fact]
+        public async Task Update_UpdatesProduct()
+        {
+            // Arrange
+            var existingProduct = new Product { Id = 1, Name = "Old NAME" };
+            var repo = new FakeProductRepository(new[] { existingProduct });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var updatedProduct = new Product { Id = 1, Name = "Updated Name" };
+
+            // Act
+            await controller.Update(updatedProduct);
+
+            // Assert
+            var list = await repo.GetAllAsync();
+            var product = list.FirstOrDefault(x => x.Id == 1);
+            Assert.NotNull(product);
+            Assert.Equal("Updated NAME", product!.Name);
+        }
+
+        [Fact]
+        public async Task Delete_RemovesProduct()
+        {
+            // Arrange
+            var productToDelete = new Product { Id = 1, Name = "John Doe" };
+            var repo = new FakeProductRepository(new[] { productToDelete });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            // Act
+            await controller.Delete(1);
+
+            // Assert
+            var list = await repo.GetAllAsync();
+            Assert.DoesNotContain(list, x => x.Id == 1);
+        }
+
+        [Fact]
+        public async Task Delete_NotFound_ReturnsNotFound()
+        {
+            // Arrange
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            // Act
+            var result = await controller.Delete(12345);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        // =======================================
+        // NAME VALIDATION TESTS
+        // =======================================
+
+        [Fact]
+        public async Task Create_Rejects_DuplicateName()
+        {
+            var repo = new FakeProductRepository(new[] { new Product { Id = 1, Name = "Existing User" } });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+            var newProduct = new Product { Id = 2, Name = "existing user" }; // different case
+
+            var result = await controller.Create(newProduct);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Create_Formats_Name_As_GivenAndUppercaseSurname()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var newProduct = new Product { Id = 5, Name = "juan carlos chamizo" };
+            var result = await controller.Create(newProduct);
+
+            Assert.IsType<OkObjectResult>(result);
+            var list = await repo.GetAllAsync();
+            var stored = list.FirstOrDefault(x => x.Id == 5);
+            Assert.Equal("Juan Carlos CHAMIZO", stored!.Name);
+        }
+
+        [Fact]
+        public async Task Create_Rejects_Names_With_Digits()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var newProduct = new Product { Id = 6, Name = "John D0e" };
+            var result = await controller.Create(newProduct);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Create_Rejects_Excessive_Repeats()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var newProduct = new Product { Id = 7, Name = "Juuuuaannnn Perez" };
+            var result = await controller.Create(newProduct);
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Create_DuplicateName_LogsWarning_WithMoq()
+        {
+            var repo = new FakeProductRepository(new[] { new Product { Id = 1, Name = "Juan Perez" } });
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Create(new Product { Id = 2, Name = "Juan PEREZ" });
+            Assert.IsType<BadRequestObjectResult>(result);
+
+            logger.Verify(x => x.Log(
+                It.Is<LogLevel>(l => l == LogLevel.Warning),
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => o.ToString()!.Contains("Duplicate name attempted")),
+                It.IsAny<Exception?>(),
+                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()
+            ), Times.AtLeastOnce());
+        }
+
+        [Fact]
+        public async Task Create_InvalidModel_ReturnsBadRequest()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+            controller.ModelState.AddModelError("Name", "Required");
+
+            var result = await controller.Create(new Product { Id = 10, Name = "" });
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+        [Fact]
+        public async Task Update_NotFound_ReturnsNotFound()
+        {
+            var repo = new FakeProductRepository();
+            var logger = new Mock<ILogger<ProductController>>();
+            var controller = new ProductController(repo, logger.Object);
+
+            var result = await controller.Update(new Product { Id = 999, Name = "X" });
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        // =======================================
+        // STOCK MANAGEMENT TESTS
+        // =======================================
 
         [Fact]
         public async Task SetStock_Valid_UpdatesStock()
@@ -110,39 +330,6 @@ namespace EmployeeCrudApi.Tests
         }
 
         [Fact]
-        public async Task Create_InvalidModel_ReturnsBadRequest()
-        {
-            var repo = new FakeProductRepository();
-            var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(repo, logger.Object);
-            controller.ModelState.AddModelError("Name", "Required");
-
-            var result = await controller.Create(new Product { Id = 10, Name = "" });
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task Create_DuplicateName_LogsWarning_WithMoq()
-        {
-            var repo = new FakeProductRepository(new[] { new Product { Id = 1, Name = "Juan Perez" } });
-            var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(repo, logger.Object);
-
-            var result = await controller.Create(new Product { Id = 2, Name = "Juan PEREZ" });
-            Assert.IsType<BadRequestObjectResult>(result);
-
-            logger.Verify(x => x.Log(
-                It.Is<LogLevel>(l => l == LogLevel.Warning),
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => o.ToString()!.Contains("Duplicate name attempted")),
-                It.IsAny<Exception?>(),
-                (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>()
-            ), Times.AtLeastOnce());
-        }
-
-        // The following EF-specific test is removed since controller no longer depends on EF directly.
-
-        [Fact]
         public async Task SetStock_NullDto_ReturnsBadRequest()
         {
             var repo = new FakeProductRepository(new[] { new Product { Id = 30, Name = "P30", Stock = 1 } });
@@ -151,17 +338,6 @@ namespace EmployeeCrudApi.Tests
 
             var result = await controller.SetStock(30, null!);
             Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task Update_NotFound_ReturnsNotFound()
-        {
-            var repo = new FakeProductRepository();
-            var logger = new Mock<ILogger<ProductController>>();
-            var controller = new ProductController(repo, logger.Object);
-
-            var result = await controller.Update(new Product { Id = 999, Name = "X" });
-            Assert.IsType<NotFoundResult>(result);
         }
 
         // =======================================
