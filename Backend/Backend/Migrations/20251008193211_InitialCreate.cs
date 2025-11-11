@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EmployeeCrudApi.Migrations
+namespace ProductCrudApi.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

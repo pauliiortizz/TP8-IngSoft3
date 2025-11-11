@@ -1,24 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from '../product.model';
-import { EmployeeService } from '../product.service';
+import { ProductService } from '../product.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../toast.service';
 
 @Component({
-  selector: 'app-addemployee',
+  selector: 'app-addproduct',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './addproduct.component.html',
   styleUrls: ['./addproduct.component.css']
 })
-export class AddemployeeComponent implements OnInit {
-  newEmployee: Product = new Product(0, '', '', 0, 0);
+export class AddproductComponent implements OnInit {
+  newProduct: Product = new Product(0, '', '', 0, 0);
   submitBtnText: string = "Crear";
   imgLoadingDisplay: string = 'none';
 
-  constructor(private employeeService: EmployeeService,
+  constructor(private productService: ProductService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private toast: ToastService) {
@@ -26,14 +26,14 @@ export class AddemployeeComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(params => {
-      const employeeId = params['id'];
-      if(employeeId)
-      this.editEmployee(employeeId);
+      const productId = params['id'];
+      if(productId)
+      this.editProduct(productId);
     });
   }
 
-  addEmployee(employee: Product) {
-    const validation = this.validateAndFormat(employee);
+  addProduct(product: Product) {
+    const validation = this.validateAndFormat(product);
     if (!validation.valid) {
       // show Spanish-friendly error
       const err = validation.error ? validation.error : 'Error en los datos';
@@ -42,9 +42,9 @@ export class AddemployeeComponent implements OnInit {
     }
 
     // Duplicate name check (case-insensitive). For edit, ignore the same id.
-    this.employeeService.getAllEmployee().subscribe(list => {
-      const nameLower = (employee.name || '').toLowerCase();
-      const duplicate = list.find(p => p.name?.toLowerCase() === nameLower && p.id !== employee.id);
+    this.productService.getAllProduct().subscribe(list => {
+      const nameLower = (product.name || '').toLowerCase();
+      const duplicate = list.find(p => p.name?.toLowerCase() === nameLower && p.id !== product.id);
       if (duplicate) {
         this.imgLoadingDisplay = 'none';
         this.toast.showError('No se puede usar un nombre duplicado');
@@ -52,54 +52,54 @@ export class AddemployeeComponent implements OnInit {
       }
 
       // proceed with create/update after duplicate check
-      this._performSave(employee);
+      this._performSave(product);
     }, err => { this.toast.showError('Error al validar duplicados'); });
   }
 
-  private _performSave(employee: Product) {
+  private _performSave(product: Product) {
     // show spinner / disable button feedback
     const originalBtnText = this.submitBtnText;
     this.imgLoadingDisplay = 'inline';
-    this.submitBtnText = employee.id === 0 ? 'Creating...' : 'Saving...';
+    this.submitBtnText = product.id === 0 ? 'Creating...' : 'Saving...';
 
-    if (employee.id == 0) {
-      employee.createdDate = new Date().toISOString();
-      this.employeeService.createEmployee(employee).subscribe({
+    if (product.id == 0) {
+      product.createdDate = new Date().toISOString();
+      this.productService.createProduct(product).subscribe({
         next: ()=> { this.imgLoadingDisplay = 'none'; this.submitBtnText = originalBtnText; this.toast.showSuccess('Producto creado correctamente'); this.router.navigate(['/']); },
         error: e => { this.imgLoadingDisplay = 'none'; this.submitBtnText = originalBtnText; this.toast.showError('Error en la API'); }
       });
     }
     else {
-      employee.createdDate = new Date().toISOString();
-      this.employeeService.updateEmployee(employee).subscribe({
+      product.createdDate = new Date().toISOString();
+      this.productService.updateProduct(product).subscribe({
         next: ()=> { this.imgLoadingDisplay = 'none'; this.submitBtnText = originalBtnText; this.toast.showSuccess('Producto editado correctamente'); this.router.navigate(['/']); },
         error: e => { this.imgLoadingDisplay = 'none'; this.submitBtnText = originalBtnText; this.toast.showError('Error en la API'); }
       });
     }
   }
-  private validateAndFormat(employee: Product): { valid: boolean; error?: string } {
-    if (!employee || !employee.name || employee.name.trim().length === 0) return { valid: false, error: 'El nombre es obligatorio' };
+  private validateAndFormat(product: Product): { valid: boolean; error?: string } {
+    if (!product || !product.name || product.name.trim().length === 0) return { valid: false, error: 'El nombre es obligatorio' };
 
     // Stock validations (align with backend 0..100 rule)
-    if (employee.stock == null || Number.isNaN(employee.stock as any)) {
+    if (product.stock == null || Number.isNaN(product.stock as any)) {
       return { valid: false, error: 'El stock es obligatorio' };
     }
-    if (employee.stock < 0 || employee.stock > 100) {
+    if (product.stock < 0 || product.stock > 100) {
       return { valid: false, error: 'El stock debe estar entre 0 y 100' };
     }
 
     // Price validations
-    if (employee.price == null || Number.isNaN(employee.price as any)) {
+    if (product.price == null || Number.isNaN(product.price as any)) {
       return { valid: false, error: 'El precio es obligatorio' };
     }
-    if (employee.price < 0) {
+    if (product.price < 0) {
       return { valid: false, error: 'El precio no puede ser negativo' };
     }
-    if (employee.price > 1000) {
+    if (product.price > 1000) {
       return { valid: false, error: 'El precio no puede ser mayor a 1000' };
     }
 
-    let name = employee.name.replace(/\u00A0/g, ' ').trim().replace(/\s+/g, ' ');
+    let name = product.name.replace(/\u00A0/g, ' ').trim().replace(/\s+/g, ' ');
   if (name.length < 2) return { valid: false, error: 'El nombre debe tener al menos 2 caracteres' };
 
   const forbidden = ['Empleado','N/A','Nombre','Anonimo','Test'];
@@ -116,22 +116,22 @@ export class AddemployeeComponent implements OnInit {
 
     // format: capitalize all given names, surname uppercase
     if (parts.length === 1) {
-      employee.name = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
+      product.name = parts[0].charAt(0).toUpperCase() + parts[0].slice(1).toLowerCase();
     } else {
   const given = parts.slice(0, parts.length - 1).map((p: string) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase());
       const surname = parts[parts.length - 1].toUpperCase();
-      employee.name = [...given, surname].join(' ');
+      product.name = [...given, surname].join(' ');
     }
 
     return { valid: true };
   }
 
-  editEmployee(employeeId: number) {
-    this.employeeService.getEmployeeById(employeeId).subscribe(res => {
-      this.newEmployee.id = res.id;
-      this.newEmployee.name = res.name
-      this.newEmployee.stock = (res as any).stock ?? 0;
-      this.newEmployee.price = (res as any).price ?? 0;
+  editProduct(productId: number) {
+    this.productService.getProductById(productId).subscribe(res => {
+      this.newProduct.id = res.id;
+      this.newProduct.name = res.name
+      this.newProduct.stock = (res as any).stock ?? 0;
+      this.newProduct.price = (res as any).price ?? 0;
       this.submitBtnText = "Editar";
     });
   }

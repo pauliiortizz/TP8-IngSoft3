@@ -1,11 +1,11 @@
-using EmployeeCrudApi.Models;
+using ProductCrudApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Backend.Repositories;
 
-namespace EmployeeCrudApi.Controllers
+namespace ProductCrudApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -76,7 +76,7 @@ stages:
             pollingTimeoutSec: '300'
 
         - script: >
-            dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj
+            dotnet test Backend.Tests/productCrudApi.Tests.csproj
             --logger "trx;LogFileName=dotnet-tests.trx"
             --results-directory "$(Build.SourcesDirectory)/test-results"
           displayName: "Run .NET Unit Tests"

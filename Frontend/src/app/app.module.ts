@@ -2,11 +2,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID } from '@angular/core'; // Importar LOCALE_ID
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { EmployeeComponent } from './product/product.component';
+import { productComponent } from './product/product.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DatePipe } from '@angular/common'; // Importar DatePipe y registerLocaleData
 import { FormsModule } from "@angular/forms";
-import { AddemployeeComponent } from './addproduct/addproduct.component';
+import { AddproductComponent } from './addproduct/addproduct.component';
 
 
 
@@ -14,8 +14,8 @@ import { AddemployeeComponent } from './addproduct/addproduct.component';
 @NgModule({
   declarations: [
     AppComponent,
-    EmployeeComponent,
-    AddemployeeComponent
+    productComponent,
+    AddproductComponent
   ],
   imports: [
     BrowserModule,

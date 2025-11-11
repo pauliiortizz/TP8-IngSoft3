@@ -1,15 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using EmployeeCrudApi.Models;
+using ProductCrudApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EmployeeCrudApi.Data
+namespace ProductCrudApi.Data
 {
     public class ApplicationDbContext: DbContext
     {
-        public DbSet<EmployeeCrudApi.Models.Product> Products { get; set; }
+        public DbSet<ProductCrudApi.Models.Product> Products { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

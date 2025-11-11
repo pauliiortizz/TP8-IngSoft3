@@ -37,16 +37,16 @@ jobs:
       - name: Restore .NET Dependencies
         run: |
           dotnet restore Backend/ProductApi.sln
-          dotnet restore Backend.Tests/EmployeeCrudApi.Tests.csproj
+          dotnet restore Backend.Tests/ProductCrudApi.Tests.csproj
 
       - name: Build Backend
         run: dotnet build Backend/ProductApi.sln --configuration Release --no-restore
 
       - name: Build Backend Tests
-        run: dotnet build Backend.Tests/EmployeeCrudApi.Tests.csproj --configuration Release --no-restore
+        run: dotnet build Backend.Tests/ProductCrudApi.Tests.csproj --configuration Release --no-restore
 
       - name: Run Backend Tests
-        run: dotnet test Backend.Tests/EmployeeCrudApi.Tests.csproj --configuration Release --no-build --verbosity normal
+        run: dotnet test Backend.Tests/ProductCrudApi.Tests.csproj --configuration Release --no-build --verbosity normal
 
       # ---- Frontend (Angular) ----
       - name: Setup Node.js
@@ -71,7 +71,7 @@ jobs:
       - name: Copy Frontend to Backend wwwroot
         run: |
           # Copiar el frontend Angular (index.html y assets)
-          cp -r Frontend/dist/employee-crud-angular/browser/* Backend/Backend/wwwroot/
+          cp -r Frontend/dist/product-crud-angular/browser/* Backend/Backend/wwwroot/
           
       - name: Verify admin.html exists
         run: |

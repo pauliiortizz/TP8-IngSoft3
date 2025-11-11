@@ -183,7 +183,7 @@
         <div class="d-flex align-items-center">
             <h4 class="mb-0">Productos</h4>
             <div class="ml-auto d-flex align-items-center header-controls">
-                <button type="button" class="btn-corp ml-3" (click)="addEmployee()">Agregar producto</button>
+                <button type="button" class="btn-corp ml-3" (click)="addProduct()">Agregar producto</button>
             </div>
         </div>
     </div>
@@ -201,7 +201,7 @@
 
     <!-- Products Grid -->
     <div class="products-grid" *ngIf="imgLoadingDisplay === 'none'">
-        <div *ngFor="let product of employees | async" 
+        <div *ngFor="let product of products | async" 
              class="product-card fade-in-up" 
              [class.show]="visibleIds.has(product.id)">
             
@@ -226,10 +226,10 @@
             </div>
             
             <div class="product-actions">
-                <button class="btn-edit" (click)="editEmployee(product.id)" aria-label="Editar producto">
+                <button class="btn-edit" (click)="editProduct(product.id)" aria-label="Editar producto">
                     <i class="fa fa-edit"></i> Editar
                 </button>
-                <button class="btn-delete" (click)="deleteEmployee(product.id)" aria-label="Eliminar producto">
+                <button class="btn-delete" (click)="deleteProduct(product.id)" aria-label="Eliminar producto">
                     <i class="fa fa-trash"></i> Eliminar
                 </button>
             </div>
@@ -237,7 +237,7 @@
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="(employees | async)?.length === 0 && imgLoadingDisplay === 'none'">
+    <div class="empty-state" *ngIf="(products | async)?.length === 0 && imgLoadingDisplay === 'none'">
         <i class="fa fa-inbox"></i>
         <h3>No hay productos</h3>
         <p>Comienza agregando tu primer producto</p>

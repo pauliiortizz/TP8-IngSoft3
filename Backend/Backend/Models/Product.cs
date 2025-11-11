@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace EmployeeCrudApi.Models
+namespace ProductCrudApi.Models
 {
     public class Product
     {

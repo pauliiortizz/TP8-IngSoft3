@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { AddemployeeComponent } from './addproduct/addproduct.component';
-import { EmployeeComponent } from './product/product.component';
+import { AddproductComponent } from './addproduct/addproduct.component';
+import { productComponent } from './product/product.component';
 
 export const routes: Routes = [
-  { path: 'addemployee', component: AddemployeeComponent },
-  { path: '**', component: EmployeeComponent },
+  { path: 'addproduct', component: AddproductComponent },
+  { path: '**', component: productComponent },
 ];

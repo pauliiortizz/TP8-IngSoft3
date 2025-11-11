@@ -1,6 +1,6 @@
 using Backend.Repositories;
 using Backend.Services;
-using EmployeeCrudApi.Models;
+using ProductCrudApi.Models;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;

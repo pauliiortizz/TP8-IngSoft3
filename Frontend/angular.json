@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "EmployeeCrudAngular": {
+    "productCrudAngular": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/employee-crud-angular",
+            "outputPath": "dist/product-crud-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -87,13 +87,13 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "EmployeeCrudAngular:build:production"
+              "buildTarget": "productCrudAngular:build:production"
             },
             "qa": {
-              "buildTarget": "EmployeeCrudAngular:build:qa"
+              "buildTarget": "productCrudAngular:build:qa"
             },
             "development": {
-              "buildTarget": "EmployeeCrudAngular:build:development"
+              "buildTarget": "productCrudAngular:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -101,7 +101,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "EmployeeCrudAngular:build"
+            "buildTarget": "productCrudAngular:build"
           }
         },
         "test": {

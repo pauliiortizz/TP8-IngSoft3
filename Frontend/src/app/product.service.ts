@@ -10,8 +10,8 @@ import { environment } from '../environments/environment'; // Importa el environ
 @Injectable({
   providedIn: 'root',
 })
-export class EmployeeService {
-  apiUrlEmployee = environment.apiUrl;  // Usa el valor de environment (ahora apunta a /api/Product)
+export class ProductService {
+  apiUrlProduct = environment.apiUrl;  // Usa el valor de environment (ahora apunta a /api/Product)
 
   constructor(private http: HttpClient, private datepipe: DatePipe) {}
 
@@ -51,9 +51,9 @@ export class EmployeeService {
     return null;
   }
 
-  getAllEmployee(): Observable<Product[]> {
+  getAllProduct(): Observable<Product[]> {
     return this.http
-      .get<Product[]>(this.apiUrlEmployee)
+      .get<Product[]>(this.apiUrlProduct)
       .pipe(
         map((data: Product[]) =>
           data.map(
@@ -81,23 +81,23 @@ export class EmployeeService {
   }
 
 
-  getEmployeeById(employeeId: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrlEmployee}/${employeeId}`);
+  getProductById(productId: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrlProduct}/${productId}`);
   }
-  createEmployee(employee: Product): Observable<Product> {
+  createProduct(product: Product): Observable<Product> {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    return this.http.post<Product>(this.apiUrlEmployee, employee, httpOptions);
+    return this.http.post<Product>(this.apiUrlProduct, product, httpOptions);
   }
-  updateEmployee(employee: Product): Observable<Product> {
+  updateProduct(product: Product): Observable<Product> {
     const httpOptions = {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
     };
-    return this.http.put<Product>(this.apiUrlEmployee, employee, httpOptions);
+    return this.http.put<Product>(this.apiUrlProduct, product, httpOptions);
   }
 
-  deleteEmployeeById(employeeid: number) {
-    return this.http.delete(`${this.apiUrlEmployee}/${employeeid}`);
+  deleteProductById(productid: number) {
+    return this.http.delete(`${this.apiUrlProduct}/${productid}`);
   }
 }
