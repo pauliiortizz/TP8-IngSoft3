@@ -162,12 +162,65 @@ stages:
             ArtifactName: "drop"
 
 # =======================================
+# 🐳 BUILD & PUSH DOCKER IMAGE
+# =======================================
+- stage: BuildDockerImage
+  displayName: "Build & Push Docker Image to GHCR"
+  dependsOn: BuildAndTest
+  condition: succeeded('BuildAndTest')
+  jobs:
+    - job: BuildPushDocker
+      displayName: "Construir y publicar imagen única"
+      steps:
+        - checkout: self
+        - download: current
+          artifact: drop
+
+        # Construir imagen única usando el Dockerfile unificado
+        - script: |
+            echo "Construyendo imagen Docker única para todos los ambientes..."
+            docker build -t ghcr.io/pauliiortizz/productosapi:$(Build.SourceVersion) -f Backend/Dockerfile $(Pipeline.Workspace)/drop
+          displayName: "🐳 Build Docker Image"
+
+        # Crear tags adicionales (latest, qa, prod)
+        - script: |
+            echo "Creando tags para la imagen..."
+            docker tag ghcr.io/pauliiortizz/productosapi:$(Build.SourceVersion) ghcr.io/pauliiortizz/productosapi:latest
+            docker tag ghcr.io/pauliiortizz/productosapi:$(Build.SourceVersion) ghcr.io/pauliiortizz/productosapi:qa
+            docker tag ghcr.io/pauliiortizz/productosapi:$(Build.SourceVersion) ghcr.io/pauliiortizz/productosapi:prod
+          displayName: "🏷️ Tag Docker Image (latest, qa, prod)"
+
+        # Login a GitHub Container Registry
+        - script: |
+            echo $(GITHUB_TOKEN) | docker login ghcr.io -u pauliiortizz --password-stdin
+          displayName: "🔐 Login to GitHub Container Registry"
+          env:
+            GITHUB_TOKEN: $(GITHUB_TOKEN)
+
+        # Push de todos los tags
+        - script: |
+            echo "Publicando imagen con todos los tags..."
+            docker push ghcr.io/pauliiortizz/productosapi:$(Build.SourceVersion)
+            docker push ghcr.io/pauliiortizz/productosapi:latest
+            docker push ghcr.io/pauliiortizz/productosapi:qa
+            docker push ghcr.io/pauliiortizz/productosapi:prod
+          displayName: "📦 Push Docker Image to GHCR"
+
+        # Limpiar imágenes locales
+        - script: |
+            docker image prune -f
+          displayName: "🧹 Cleanup local images"
+          condition: always()
+
+# =======================================
 # 🌐 DEPLOY QA
 # =======================================
 - stage: Deploy_QA
   displayName: "Deploy to QA"
-  dependsOn: BuildAndTest
-  condition: succeeded('BuildAndTest')
+  dependsOn: 
+    - BuildAndTest
+    - BuildDockerImage
+  condition: succeeded('BuildDockerImage')
   variables:
     WEBAPP_QA: ProductosWEB
   jobs:
