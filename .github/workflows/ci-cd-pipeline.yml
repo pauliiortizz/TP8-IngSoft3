@@ -89,19 +89,15 @@ jobs:
           path: ./publish
 
   # =======================================
-  # 🐳 BUILD & PUSH DOCKER IMAGES
+  # 🐳 BUILD & PUSH DOCKER IMAGE (ÚNICA)
   # =======================================
   docker-build-push:
-    name: Build & Push Docker Images
+    name: Build & Push Docker Image (Unified)
     needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    
-    strategy:
-      matrix:
-        environment: [qa, prod]
     
     steps:
       - name: Checkout code
@@ -129,19 +125,30 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ matrix.environment }}
-            type=raw,value=${{ matrix.environment }}-${{ github.run_number }}
-            type=sha,prefix=${{ matrix.environment }}-
+            type=raw,value=latest
+            type=raw,value=qa
+            type=raw,value=prod
+            type=sha
 
-      # Build and push Docker image
-      - name: Build and Push Docker Image - ${{ matrix.environment }}
+      # Build and push Docker image ÚNICA
+      - name: Build and Push Unified Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./publish
-          file: ./Backend/Dockerfile.${{ matrix.environment }}
+          file: ./Backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: Image Summary
+        run: |
+          echo "✅ Imagen única construida y publicada con los siguientes tags:"
+          echo "  - latest"
+          echo "  - qa"
+          echo "  - prod"
+          echo "  - sha-${{ github.sha }}"
+          echo ""
+          echo "📦 Ubicación: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
 
   # =======================================
   # 🌐 DEPLOY TO RENDER QA
