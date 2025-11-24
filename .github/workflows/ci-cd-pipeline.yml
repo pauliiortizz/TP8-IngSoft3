@@ -176,11 +176,112 @@ jobs:
           curl -f "${{ vars.QA_URL }}/admin.html" || echo "Admin page failed"
 
   # =======================================
-  # 🚀 DEPLOY TO RENDER PROD
+  # 🧪 E2E TESTS QA (Cypress)
+  # =======================================
+  e2e-tests-qa:
+    name: E2E Tests on QA Environment
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Instalar Node.js
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Instalar dependencias de Cypress
+      - name: Install Cypress Dependencies
+        run: npm ci
+
+      # Esperar a que QA esté listo y verificar salud
+      - name: Verificar que QA esté listo (Health Check)
+        run: |
+          echo "Verificando que QA esté listo..."
+          max_attempts=10
+          attempt=1
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "Intento $attempt de $max_attempts..."
+            
+            # Verificar si la página responde
+            http_code=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.QA_URL }}" || echo "000")
+            
+            if [ "$http_code" = "200" ]; then
+              echo "✅ QA está respondiendo correctamente (HTTP $http_code)"
+              sleep 10  # Esperar 10 segundos adicionales para que la app termine de inicializar
+              exit 0
+            else
+              echo "⚠️ QA no está listo aún (HTTP $http_code). Esperando 10 segundos..."
+              sleep 10
+            fi
+            
+            attempt=$((attempt + 1))
+          done
+          
+          echo "❌ QA no respondió después de $max_attempts intentos"
+          exit 1
+
+      # Limpiar resultados anteriores de Cypress
+      - name: Limpiar resultados anteriores de Cypress
+        run: |
+          rm -rf cypress/results cypress/screenshots cypress/videos
+          mkdir -p cypress/results
+
+      # Ejecutar pruebas E2E con Cypress contra QA
+      - name: Ejecutar pruebas E2E con Cypress en QA
+        run: |
+          echo "🧪 Ejecutando Cypress contra: ${{ vars.QA_URL }}"
+          echo "� Tests encontrados:"
+          find cypress/e2e -name "*.cy.js" -type f
+          
+          npx cypress run --reporter junit --reporter-options "mochaFile=cypress/results/results-[hash].xml,toConsole=true"
+          
+          exit_code=$?
+          if [ $exit_code -ne 0 ]; then
+            echo ""
+            echo "❌ Cypress falló con código de salida: $exit_code"
+            echo "📸 Revisa los screenshots y videos en los artifacts para más detalles"
+            echo "🔗 URL testeada: ${{ vars.QA_URL }}"
+          fi
+          exit $exit_code
+        continue-on-error: false
+        env:
+          CYPRESS_BASE_URL: ${{ vars.QA_URL }}
+
+      # Publicar resultados de pruebas E2E de Cypress
+      - name: Publicar resultados de pruebas E2E (Cypress)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-test-results
+          path: cypress/results/*.xml
+        if: always()
+
+      # Publicar screenshots de Cypress (solo si hubo fallos)
+      - name: Publicar screenshots de Cypress
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots-qa
+          path: cypress/screenshots
+        if: failure()
+
+      # Publicar videos de Cypress
+      - name: Publicar videos de Cypress
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos-qa
+          path: cypress/videos
+        if: always()
+
+  # =======================================
+  # �🚀 DEPLOY TO RENDER PROD
   # =======================================
   deploy-prod:
     name: Deploy to Production (Render)
-    needs: deploy-qa
+    needs: e2e-tests-qa
     runs-on: ubuntu-latest
     environment:
       name: Production
