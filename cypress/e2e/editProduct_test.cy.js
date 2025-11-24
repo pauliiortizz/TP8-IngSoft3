@@ -1,10 +1,13 @@
 describe('editProductTest', () => {
   it('Edita correctamente un producto', () => {
-    // 🌐 Visita la URL del front (usá la de Azure o la local)
-    cy.visit('https://productosweb-fpcnfsbsg8gscbat.brazilsouth-01.azurewebsites.net/');
+    // 🌐 Visita la URL del front (usa baseUrl de la config)
+    cy.visit('/');
 
-    // Esperar a que los productos carguen
-    cy.get('.product-card').should('have.length.at.least', 1);
+    // Esperar a que desaparezca el loading primero
+    cy.get('.products-grid', { timeout: 30000 }).should('be.visible');
+    
+    // Ahora sí esperar a que los productos carguen
+    cy.get('.product-card', { timeout: 10000 }).should('have.length.at.least', 1);
 
     // Hacer clic en el botón Editar del primer producto
     cy.get('.product-card').first().find('.btn-edit').click();
